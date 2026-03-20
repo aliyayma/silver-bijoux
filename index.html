@@ -232,6 +232,18 @@
         }, { deep: true });
     },
     cartItems: [], 
+    addToCart(product) {
+        let existing = this.cartItems.find(i => i.id === product.id);
+        if(existing) {
+            existing.quantity++;
+        } else {
+            this.cartItems.push({
+                ...product, 
+                quantity: 1
+            });
+        }
+        this.cartOpen = true;
+    },
     supportOpen: false, 
     searchOpen: false, 
     searchQuery: '',
@@ -371,7 +383,7 @@
                             <p class="text-lg font-bold text-slate-900 mt-2">£<span x-text="product.price.toFixed(2)"></span></p>
                         </div>
                         <button 
-                            @click="cartItems.push({id: product.id, name: product.name, price: product.price, quantity: 1}); searchOpen = false; searchQuery = ''" 
+                            @click="addToCart({id: product.id, name: product.name, price: product.price, image: product.image || ''}); searchOpen = false; searchQuery = ''"
                             class="bg-slate-900 text-white px-4 py-2 text-xs font-bold uppercase tracking-wide rounded hover:bg-slate-800 transition-colors whitespace-nowrap"
                             aria-label="Add to cart"
                         >
@@ -446,44 +458,19 @@
         <p class="text-center text-slate-500 text-sm md:text-base mb-16 max-w-2xl mx-auto">Carefully curated pieces that exemplify elegance, quality, and timeless design.</p>
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
-            <!-- Product 1 -->
-            <div class="group product-card">
-                <div class="aspect-[4/5] bg-slate-100 mb-6 overflow-hidden relative rounded-sm">
-                    <img src="https://images.unsplash.com/photo-1635767798638-3e25273a8236?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover group-hover:scale-105 transition duration-700" alt="Crescent Silver Ring - 925 Sterling Silver" loading="lazy">
-                    <button @click="cartItems.push({id: 1, name: 'Crescent Silver Ring', price: 85, quantity: 1, image: 'https://images.unsplash.com/photo-1635767798638-3e25273a8236?auto=format&fit=crop&q=80&w=800'}); cartOpen = true" class="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur py-3 px-4 text-[9px] uppercase font-bold tracking-widest opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0 rounded-sm hover:bg-white" aria-label="Add Crescent Silver Ring to cart">Add to Cart</button>
+            <template x-for="product in products" :key="product.id">
+                <div class="group product-card">
+                    <div class="aspect-[4/5] bg-slate-100 mb-6 overflow-hidden relative rounded-sm">
+                        <img :src="product.image || 'https://images.unsplash.com/photo-1635767798638-3e25273a8236?auto=format&fit=crop&q=80&w=800'" class="w-full h-full object-cover group-hover:scale-105 transition duration-700" :alt="product.name + ' - 925 Sterling Silver'" loading="lazy">
+                        <button @click="addToCart(product)" class="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur py-3 px-4 text-[9px] uppercase font-bold tracking-widest opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0 rounded-sm hover:bg-white" :aria-label="'Add ' + product.name + ' to cart'">Add to Cart</button>
+                    </div>
+                    <div class="space-y-2">
+                        <h3 class="serif text-lg italic text-slate-900 group-hover:text-slate-700 transition-colors font-light" x-text="product.name"></h3>
+                        <p class="text-sm font-medium text-slate-700" x-text="'£' + product.price.toFixed(2)"></p>
+                        <p class="text-xs uppercase tracking-widest text-slate-400 font-semibold" x-text="product.category || '925 Sterling Silver'"></p>
+                    </div>
                 </div>
-                <div class="space-y-2">
-                    <h3 class="serif text-lg italic text-slate-900 group-hover:text-slate-700 transition-colors font-light">Crescent Silver Ring</h3>
-                    <p class="text-sm font-medium text-slate-700">£85.00</p>
-                    <p class="text-xs uppercase tracking-widest text-slate-400 font-semibold">925 Sterling Silver</p>
-                </div>
-            </div>
-            
-            <!-- Product 2 -->
-            <div class="group product-card">
-                <div class="aspect-[4/5] bg-slate-100 mb-6 overflow-hidden relative rounded-sm">
-                    <img src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover group-hover:scale-105 transition duration-700" alt="Pearl Silver Necklace - 925 Sterling Silver" loading="lazy">
-                    <button @click="cartItems.push({id: 2, name: 'Pearl Silver Necklace', price: 125, quantity: 1, image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&q=80&w=800'}); cartOpen = true" class="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur py-3 px-4 text-[9px] uppercase font-bold tracking-widest opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0 rounded-sm hover:bg-white" aria-label="Add Pearl Silver Necklace to cart">Add to Cart</button>
-                </div>
-                <div class="space-y-2">
-                    <h3 class="serif text-lg italic text-slate-900 group-hover:text-slate-700 transition-colors font-light">Pearl Silver Necklace</h3>
-                    <p class="text-sm font-medium text-slate-700">£125.00</p>
-                    <p class="text-xs uppercase tracking-widest text-slate-400 font-semibold">925 Sterling Silver</p>
-                </div>
-            </div>
-            
-            <!-- Product 3 -->
-            <div class="group product-card">
-                <div class="aspect-[4/5] bg-slate-100 mb-6 overflow-hidden relative rounded-sm">
-                    <img src="https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover group-hover:scale-105 transition duration-700" alt="Minimalist Bracelet - 925 Sterling Silver" loading="lazy">
-                    <button @click="cartItems.push({id: 3, name: 'Minimalist Bracelet', price: 95, quantity: 1, image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=800'}); cartOpen = true" class="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur py-3 px-4 text-[9px] uppercase font-bold tracking-widest opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0 rounded-sm hover:bg-white" aria-label="Add Minimalist Bracelet to cart">Add to Cart</button>
-                </div>
-                <div class="space-y-2">
-                    <h3 class="serif text-lg italic text-slate-900 group-hover:text-slate-700 transition-colors font-light">Minimalist Bracelet</h3>
-                    <p class="text-sm font-medium text-slate-700">£95.00</p>
-                    <p class="text-xs uppercase tracking-widest text-slate-400 font-semibold">925 Sterling Silver</p>
-                </div>
-            </div>
+            </template>
         </div>
     </section>
 
