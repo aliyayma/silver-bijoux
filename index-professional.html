@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="description" content="Silver Bijoux - Premium 925 sterling silver jewelry handcrafted by master artisans. Exquisite elegance delivered worldwide.">
+    <meta name="keywords" content="sterling silver jewelry, handmade jewelry, luxury accessories, 925 silver, premium jewelry">
+    <meta name="author" content="Silver Bijoux">
+    <meta property="og:title" content="Silver Bijoux | Premium Sterling Silver Jewelry">
+    <meta property="og:description" content="Discover exquisite handcrafted 925 sterling silver jewelry with timeless elegance.">
+    <meta property="og:type" content="website">
+    <meta name="theme-color" content="#1e293b">
+    <title>Silver Bijoux | Premium Handcrafted Sterling Silver Jewelry</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Inter', sans-serif; color: #1e293b; background: #ffffff; }
+        .serif { font-family: 'Playfair Display', serif; letter-spacing: -0.02em; }
+        [x-cloak] { display: none !important; }
+        
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(24px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .fade-in { animation: fadeIn 0.8s cubic-bezier(0.33, 0.66, 0.66, 1) forwards; }
+        .slide-in-right { animation: slideInRight 0.8s cubic-bezier(0.33, 0.66, 0.66, 1) forwards; }
+        .product-card { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); will-change: transform; }
+        .product-card:hover { transform: translateY(-6px); }
+        
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="bg-white text-slate-900" x-data="{ cartOpen: false, cartItems: [], supportOpen: false }" @keydown.escape="cartOpen = false; supportOpen = false">
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 px-6 sm:px-8 py-4 flex justify-between items-center shadow-sm" role="navigation" aria-label="Main Navigation">
+        <a href="#" class="flex items-center gap-2 group" aria-label="Silver Bijoux">
+            <div class="w-8 h-8 bg-slate-900 rounded-full flex items-center justify-center group-hover:bg-slate-800 transition-colors">
+                <span class="text-white font-serif text-sm font-bold">✦</span>
+            </div>
+            <span class="text-lg font-bold tracking-[0.2em] uppercase serif hidden sm:inline">Bijoux</span>
+        </a>
+        
+        <div class="hidden md:flex space-x-12 text-[11px] uppercase tracking-[0.2em] font-600">
+            <a href="#shop" class="text-slate-700 hover:text-slate-900 transition-colors">Collection</a>
+            <a href="#benefits" class="text-slate-700 hover:text-slate-900 transition-colors">Why Us</a>
+            <a href="#testimonials" class="text-slate-700 hover:text-slate-900 transition-colors">Reviews</a>
+            <a href="#about" class="text-slate-700 hover:text-slate-900 transition-colors">About</a>
+        </div>
+        
+        <button @click="cartOpen = true" class="relative flex items-center gap-2 text-slate-700 hover:text-slate-900 transition-colors group" aria-label="Shopping Cart" aria-expanded="false">
+            <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+            </svg>
+            <span x-show="cartItems.length > 0" class="bg-slate-900 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold" x-text="cartItems.length"></span>
+        </button>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="relative h-[60vh] md:h-[70vh] flex items-center justify-center overflow-hidden">
+        <img src="https://images.unsplash.com/photo-1535633302703-b0703af6c3af?auto=format&fit=crop&q=80&w=1600" class="absolute inset-0 w-full h-full object-cover opacity-80" alt="Luxury silver jewelry display" loading="lazy">
+        <div class="absolute inset-0 bg-gradient-to-b from-black/20 to-black/40"></div>
+        <div class="relative z-10 text-center px-4 sm:px-8">
+            <h1 class="serif text-4xl sm:text-5xl md:text-7xl mb-4 sm:mb-6 italic text-slate-50 font-light leading-tight">Pure Silver. Pure You.</h1>
+            <p class="text-xs sm:text-sm md:text-base font-light tracking-[0.1em] mb-8 sm:mb-10 max-w-xl mx-auto text-slate-100">Discover exquisite handcrafted 925 sterling silver jewelry designed for those who appreciate timeless elegance.</p>
+            <a href="#shop" class="inline-block bg-slate-900 text-white px-8 sm:px-12 py-3 sm:py-4 text-[10px] uppercase font-bold tracking-[0.3em] hover:bg-slate-800 transition-colors duration-300 rounded-sm">Shop Collection</a>
+        </div>
+    </header>
+
+    <!-- Benefits Section -->
+    <section id="benefits" class="bg-gradient-to-b from-white via-slate-50 to-white py-20 md:py-24 px-6 sm:px-8" aria-labelledby="benefits-title">
+        <div class="max-w-7xl mx-auto">
+            <h2 id="benefits-title" class="serif text-center text-3xl md:text-4xl italic mb-4 text-slate-900 font-light">Why Choose Silver Bijoux</h2>
+            <p class="text-center text-slate-500 text-sm md:text-base mb-16 max-w-2xl mx-auto">Experience luxury, authenticity, and exceptional craftsmanship in every piece.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+                <div class="text-center p-6 md:p-8 rounded-lg hover:shadow-lg transition-shadow duration-300 group">
+                    <div class="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-full mb-4 group-hover:scale-110 transition-transform duration-300">✓</div>
+                    <h3 class="font-semibold text-slate-900 mb-2 text-lg">925 Sterling</h3>
+                    <p class="text-sm text-slate-500 leading-relaxed font-light">Certified pure 925 sterling silver for lasting brilliance</p>
+                </div>
+                
+                <div class="text-center p-6 md:p-8 rounded-lg hover:shadow-lg transition-shadow duration-300 group">
+                    <div class="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-full mb-4 group-hover:scale-110 transition-transform duration-300">✦</div>
+                    <h3 class="font-semibold text-slate-900 mb-2 text-lg">Handcrafted</h3>
+                    <p class="text-sm text-slate-500 leading-relaxed font-light">Meticulously created by master artisans with expertise</p>
+                </div>
+                
+                <div class="text-center p-6 md:p-8 rounded-lg hover:shadow-lg transition-shadow duration-300 group">
+                    <div class="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-full mb-4 group-hover:scale-110 transition-transform duration-300">⚡</div>
+                    <h3 class="font-semibold text-slate-900 mb-2 text-lg">Fast Delivery</h3>
+                    <p class="text-sm text-slate-500 leading-relaxed font-light">Secure worldwide delivery in 3-5 business days</p>
+                </div>
+                
+                <div class="text-center p-6 md:p-8 rounded-lg hover:shadow-lg transition-shadow duration-300 group">
+                    <div class="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-full mb-4 group-hover:scale-110 transition-transform duration-300">🌿</div>
+                    <h3 class="font-semibold text-slate-900 mb-2 text-lg">Sustainable</h3>
+                    <p class="text-sm text-slate-500 leading-relaxed font-light">Ethical sourcing and eco-conscious practices</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section id="shop" class="max-w-7xl mx-auto py-24 px-6 sm:px-8" aria-labelledby="shop-title">
+        <h2 id="shop-title" class="serif text-center text-3xl md:text-4xl italic mb-4 text-slate-900 font-light">Featured Collection</h2>
+        <p class="text-center text-slate-500 text-sm md:text-base mb-16 max-w-2xl mx-auto">Carefully curated pieces exemplifying elegance, quality, and timeless design.</p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
+            <!-- Product 1 -->
+            <div class="group product-card">
+                <div class="aspect-[4/5] bg-slate-100 mb-6 overflow-hidden relative rounded-sm">
+                    <img src="https://images.unsplash.com/photo-1635767798638-3e25273a8236?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover group-hover:scale-105 transition duration-700" alt="Crescent Silver Ring" loading="lazy">
+                    <button @click="cartItems.push({name: 'Crescent Silver Ring', price: 85}); cartOpen = true" class="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur py-3 px-4 text-[9px] uppercase font-bold tracking-widest opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0 rounded-sm hover:bg-white" aria-label="Add Crescent Silver Ring to cart">Add to Cart</button>
+                </div>
+                <div class="space-y-2">
+                    <h3 class="serif text-lg italic text-slate-900 group-hover:text-slate-700 transition-colors font-light">Crescent Silver Ring</h3>
+                    <p class="text-sm font-medium text-slate-700">$85.00</p>
+                    <p class="text-xs uppercase tracking-widest text-slate-400 font-semibold">925 Sterling Silver</p>
+                </div>
+            </div>
+            
+            <!-- Product 2 -->
+            <div class="group product-card">
+                <div class="aspect-[4/5] bg-slate-100 mb-6 overflow-hidden relative rounded-sm">
+                    <img src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover group-hover:scale-105 transition duration-700" alt="Pearl Silver Necklace" loading="lazy">
+                    <button @click="cartItems.push({name: 'Pearl Silver Necklace', price: 125}); cartOpen = true" class="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur py-3 px-4 text-[9px] uppercase font-bold tracking-widest opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0 rounded-sm hover:bg-white" aria-label="Add Pearl Silver Necklace to cart">Add to Cart</button>
+                </div>
+                <div class="space-y-2">
+                    <h3 class="serif text-lg italic text-slate-900 group-hover:text-slate-700 transition-colors font-light">Pearl Silver Necklace</h3>
+                    <p class="text-sm font-medium text-slate-700">$125.00</p>
+                    <p class="text-xs uppercase tracking-widest text-slate-400 font-semibold">925 Sterling Silver</p>
+                </div>
+            </div>
+            
+            <!-- Product 3 -->
+            <div class="group product-card">
+                <div class="aspect-[4/5] bg-slate-100 mb-6 overflow-hidden relative rounded-sm">
+                    <img src="https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover group-hover:scale-105 transition duration-700" alt="Minimalist Bracelet" loading="lazy">
+                    <button @click="cartItems.push({name: 'Minimalist Bracelet', price: 95}); cartOpen = true" class="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur py-3 px-4 text-[9px] uppercase font-bold tracking-widest opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0 rounded-sm hover:bg-white" aria-label="Add Minimalist Bracelet to cart">Add to Cart</button>
+                </div>
+                <div class="space-y-2">
+                    <h3 class="serif text-lg italic text-slate-900 group-hover:text-slate-700 transition-colors font-light">Minimalist Bracelet</h3>
+                    <p class="text-sm font-medium text-slate-700">$95.00</p>
+                    <p class="text-xs uppercase tracking-widest text-slate-400 font-semibold">925 Sterling Silver</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section id="testimonials" class="py-24 px-6 sm:px-8 bg-gradient-to-b from-slate-50 to-white" aria-labelledby="testimonials-title">
+        <div class="max-w-7xl mx-auto">
+            <h2 id="testimonials-title" class="serif text-center text-3xl md:text-4xl italic mb-4 text-slate-900 font-light">Trusted by Customers</h2>
+            <p class="text-center text-slate-500 text-sm md:text-base mb-16 max-w-2xl mx-auto">Hear from our satisfied customers about their experience.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="p-8 bg-white rounded-lg border border-slate-200 hover:shadow-lg transition-shadow duration-300">
+                    <div class="flex gap-1 mb-4">★★★★★</div>
+                    <blockquote class="text-slate-700 italic mb-6 text-sm leading-relaxed font-light">"Stunning craftsmanship and exceptional attention to detail. Highly recommended!"</blockquote>
+                    <footer>
+                        <p class="font-semibold text-slate-900">Maria Rodriguez</p>
+                        <p class="text-xs text-slate-500 uppercase tracking-wider mt-1">Verified Buyer</p>
+                    </footer>
+                </div>
+                
+                <div class="p-8 bg-white rounded-lg border border-slate-200 hover:shadow-lg transition-shadow duration-300">
+                    <div class="flex gap-1 mb-4">★★★★★</div>
+                    <blockquote class="text-slate-700 italic mb-6 text-sm leading-relaxed font-light">"Multiple purchases for gifts - everyone loved them. Premium quality throughout."</blockquote>
+                    <footer>
+                        <p class="font-semibold text-slate-900">James Chen</p>
+                        <p class="text-xs text-slate-500 uppercase tracking-wider mt-1">Verified Buyer</p>
+                    </footer>
+                </div>
+                
+                <div class="p-8 bg-white rounded-lg border border-slate-200 hover:shadow-lg transition-shadow duration-300">
+                    <div class="flex gap-1 mb-4">★★★★★</div>
+                    <blockquote class="text-slate-700 italic mb-6 text-sm leading-relaxed font-light">"Timeless elegance. Wear daily and still looks stunning. Worth every penny."</blockquote>
+                    <footer>
+                        <p class="font-semibold text-slate-900">Sophie Laurent</p>
+                        <p class="text-xs text-slate-500 uppercase tracking-wider mt-1">Verified Buyer</p>
+                    </footer>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About -->
+    <section id="about" class="bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 py-32 px-6 sm:px-8 text-white" aria-labelledby="about-title">
+        <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-16 lg:gap-20">
+            <div class="lg:w-1/2">
+                <img src="https://images.unsplash.com/photo-1573408301185-9146fe634ad0?auto=format&fit=crop&q=80&w=1000" class="w-full rounded-lg shadow-2xl" alt="Craftsmanship" loading="lazy">
+            </div>
+            <div class="lg:w-1/2 space-y-8">
+                <span class="text-amber-200 text-xs uppercase tracking-widest font-semibold">Our Heritage</span>
+                <h2 id="about-title" class="serif text-4xl md:text-5xl italic font-light">Crafted Excellence Since 2024</h2>
+                <p class="text-slate-200 leading-relaxed font-light text-base">At Silver Bijoux, we blend traditional artisanship with modern design. Each piece is carefully created to embody elegance, quality, and enduring beauty.</p>
+                
+                <div class="grid grid-cols-3 gap-8 pt-4">
+                    <div>
+                        <p class="text-3xl font-bold text-amber-200">925</p>
+                        <p class="text-xs uppercase tracking-widest text-slate-300 mt-2 font-semibold">Purity</p>
+                    </div>
+                    <div>
+                        <p class="text-3xl font-bold text-amber-200">100%</p>
+                        <p class="text-xs uppercase tracking-widest text-slate-300 mt-2 font-semibold">Handmade</p>
+                    </div>
+                    <div>
+                        <p class="text-3xl font-bold text-amber-200">∞</p>
+                        <p class="text-xs uppercase tracking-widest text-slate-300 mt-2 font-semibold">Timeless</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-100 py-16 px-6 sm:px-8" role="contentinfo">
+        <div class="max-w-7xl mx-auto mb-12">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div>
+                    <span class="serif text-base font-bold">Bijoux</span>
+                    <p class="text-xs text-slate-400 leading-relaxed font-light mt-3">Premium sterling silver crafted with passion.</p>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-sm uppercase tracking-widest mb-4">Shop</h4>
+                    <ul class="space-y-2 text-xs text-slate-400">
+                        <li><a href="#shop" class="hover:text-amber-200 transition-colors">Collection</a></li>
+                        <li><a href="#" class="hover:text-amber-200 transition-colors">Best Sellers</a></li>
+                        <li><a href="#" class="hover:text-amber-200 transition-colors">New Arrivals</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-sm uppercase tracking-widest mb-4">Service</h4>
+                    <ul class="space-y-2 text-xs text-slate-400">
+                        <li><a href="#" class="hover:text-amber-200 transition-colors">Shipping</a></li>
+                        <li><a href="#" class="hover:text-amber-200 transition-colors">Returns</a></li>
+                        <li><a href="#" class="hover:text-amber-200 transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-sm uppercase tracking-widest mb-4">Connect</h4>
+                    <ul class="space-y-2 text-xs text-slate-400">
+                        <li><a href="#" class="hover:text-amber-200 transition-colors">Instagram</a></li>
+                        <li><a href="#" class="hover:text-amber-200 transition-colors">Facebook</a></li>
+                        <li><a href="#" class="hover:text-amber-200 transition-colors">Newsletter</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="border-t border-slate-700 pt-8 max-w-7xl mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-xs">
+                <p class="uppercase tracking-[0.2em] text-slate-400">&copy; 2026 Silver Bijoux. All Rights Reserved.</p>
+                <div class="flex gap-6 text-slate-400">
+                    <a href="#" class="hover:text-amber-200 transition-colors">Privacy</a>
+                    <a href="#" class="hover:text-amber-200 transition-colors">Terms</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Cart Sidebar -->
+    <div x-show="cartOpen" x-cloak class="fixed inset-0 z-[100]" @click.self="cartOpen = false" role="dialog" aria-modal="true" aria-labelledby="cart-title">
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" @click="cartOpen = false"></div>
+        <div class="absolute inset-y-0 right-0 max-w-md w-full bg-white shadow-2xl flex flex-col">
+            <div class="bg-slate-900 p-6 text-white flex justify-between items-center">
+                <h3 id="cart-title" class="font-semibold uppercase tracking-widest text-sm">Your Bag</h3>
+                <button @click="cartOpen = false" class="text-2xl hover:text-slate-300 transition-colors" aria-label="Close">×</button>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto p-6">
+                <div x-show="cartItems.length > 0" class="space-y-6">
+                    <template x-for="(item, index) in cartItems" :key="index">
+                        <div class="flex justify-between items-start border-b border-slate-100 pb-6">
+                            <div class="flex-1">
+                                <p class="text-sm font-semibold text-slate-900" x-text="item.name"></p>
+                                <p class="text-sm text-slate-700 mt-2 font-medium" x-text="'$' + item.price.toFixed(2)"></p>
+                            </div>
+                            <button @click="cartItems.splice(index, 1)" class="text-xs font-medium text-slate-400 hover:text-red-500 uppercase tracking-wide">Remove</button>
+                        </div>
+                    </template>
+                </div>
+                
+                <div x-show="cartItems.length === 0" class="text-center py-16">
+                    <p class="text-sm text-slate-500 font-light">Your bag is empty</p>
+                </div>
+            </div>
+
+            <div x-show="cartItems.length > 0" class="border-t border-slate-200 p-6 space-y-4">
+                <div class="flex justify-between pb-4 border-b border-slate-200">
+                    <span class="text-sm font-semibold text-slate-700">Subtotal</span>
+                    <span class="text-lg font-semibold text-slate-900 serif" x-text="'$' + cartItems.reduce((sum, item) => sum + item.price, 0).toFixed(2)"></span>
+                </div>
+                <a href="checkout.html" class="block w-full bg-slate-900 text-white text-center py-4 text-[11px] uppercase font-bold tracking-widest hover:bg-slate-800 transition-colors rounded-sm">Checkout</a>
+                <button @click="cartOpen = false" class="w-full border-2 border-slate-200 py-3 text-sm font-semibold hover:bg-slate-50 transition-colors rounded-sm">Continue Shopping</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Support Widget -->
+    <div class="fixed bottom-8 right-8 z-50">
+        <button @click="supportOpen = !supportOpen" class="bg-slate-900 text-white p-4 rounded-full shadow-2xl hover:scale-110 hover:bg-slate-800 transition-all" :aria-expanded="supportOpen">
+            <svg x-show="!supportOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+            </svg>
+            <span x-show="supportOpen">×</span>
+        </button>
+        
+        <div x-show="supportOpen" x-transition class="absolute bottom-20 right-0 w-80 bg-white shadow-2xl rounded-lg border border-slate-200 overflow-hidden">
+            <div class="bg-slate-900 p-5 text-white">
+                <h3 class="font-semibold uppercase tracking-widest text-sm">How Can We Help?</h3>
+                <p class="text-xs text-slate-300 mt-1">Available 24/7</p>
+            </div>
+            
+            <div class="p-6 space-y-5 text-sm">
+                <div class="flex gap-4">
+                    <span class="text-2xl">📦</span>
+                    <div>
+                        <p class="font-semibold text-slate-900">Shipping</p>
+                        <p class="text-xs text-slate-500 mt-1">3-5 days worldwide</p>
+                    </div>
+                </div>
+                
+                <div class="flex gap-4">
+                    <span class="text-2xl">✓</span>
+                    <div>
+                        <p class="font-semibold text-slate-900">Authentic</p>
+                        <p class="text-xs text-slate-500 mt-1">Certified 925 silver</p>
+                    </div>
+                </div>
+                
+                <div class="flex gap-4">
+                    <span class="text-2xl">💬</span>
+                    <div>
+                        <p class="font-semibold text-slate-900">Support</p>
+                        <p class="text-xs text-slate-500 mt-1">Expert assistance</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

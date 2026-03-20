@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "name": "Moonlit Artisan Band",
+    "price": 145,
+    "image": "https://images.unsplash.com/photo-1635767798638-3e25273a8236?q=80&w=800",
+    "category": "Rings"
+  },
+  {
+    "id": 2,
+    "name": "Minimalist Chain Link",
+    "price": 120,
+    "image": "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=80&w=800",
+    "category": "Necklaces"
+  },
+  {
+    "id": 3,
+    "name": "Luna Drop Earrings",
+    "price": 65,
+    "image": "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?q=80&w=800",
+    "category": "Earrings"
+  }
+]

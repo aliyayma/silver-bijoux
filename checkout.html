@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout | Silver Bijoux</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+        
+        /* Dynamic Theme System */
+        :root {
+            --primary-dark: #1e293b;
+            --primary-light: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --accent-color: #0f172a;
+            --bg-secondary: #f1f5f9;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Dark Mode */
+        [data-theme="dark"] {
+            --primary-dark: #0f172a;
+            --primary-light: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --border-color: #334155;
+            --accent-color: #ffffff;
+            --bg-secondary: #0f172a;
+        }
+
+        /* Luxury Theme */
+        [data-theme="luxury"] {
+            --primary-dark: #1a1a1a;
+            --primary-light: #faf8f3;
+            --text-primary: #2c2c2c;
+            --text-secondary: #666666;
+            --border-color: #d4af37;
+            --accent-color: #d4af37;
+            --bg-secondary: #f5f1e8;
+        }
+
+        /* Modern Theme */
+        [data-theme="modern"] {
+            --primary-dark: #1a365d;
+            --primary-light: #f0f9ff;
+            --text-primary: #1a365d;
+            --text-secondary: #475569;
+            --border-color: #0284c7;
+            --accent-color: #0284c7;
+            --bg-secondary: #e0f2fe;
+        }
+
+        /* Minimal Theme */
+        [data-theme="minimal"] {
+            --primary-dark: #404040;
+            --primary-light: #ffffff;
+            --text-primary: #404040;
+            --text-secondary: #888888;
+            --border-color: #cccccc;
+            --accent-color: #404040;
+            --bg-secondary: #f7f7f7;
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            color: var(--text-primary);
+            background: linear-gradient(to bottom, var(--bg-secondary), var(--primary-light));
+            scroll-behavior: smooth;
+        }
+        .serif { font-family: 'Playfair Display', serif; }
+        [x-cloak] { display: none !important; }
+        
+        .step-circle { 
+            transition: all 0.3s ease; 
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+        .step-circle.active { 
+            background: var(--primary-dark);
+            color: var(--primary-light);
+        }
+        .step-circle.completed { 
+            background: #10b981;
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="password"],
+        input[type="search"] {
+            color: #1e293b !important;
+            -webkit-text-fill-color: #1e293b !important;
+            font-weight: 400 !important;
+            font-size: 14px !important;
+            line-height: 1.5 !important;
+            letter-spacing: 0 !important;
+        }
+        
+        [data-theme="dark"] input[type="text"],
+        [data-theme="dark"] input[type="email"],
+        [data-theme="dark"] input[type="tel"],
+        [data-theme="dark"] input[type="password"],
+        [data-theme="dark"] input[type="search"] {
+            color: #f1f5f9 !important;
+            -webkit-text-fill-color: #f1f5f9 !important;
+        }
+        
+        [data-theme="luxury"] input[type="text"],
+        [data-theme="luxury"] input[type="email"],
+        [data-theme="luxury"] input[type="tel"],
+        [data-theme="luxury"] input[type="password"],
+        [data-theme="luxury"] input[type="search"] {
+            color: #2c2c2c !important;
+            -webkit-text-fill-color: #2c2c2c !important;
+        }
+        
+        [data-theme="modern"] input[type="text"],
+        [data-theme="modern"] input[type="email"],
+        [data-theme="modern"] input[type="tel"],
+        [data-theme="modern"] input[type="password"],
+        [data-theme="modern"] input[type="search"] {
+            color: #1a365d !important;
+            -webkit-text-fill-color: #1a365d !important;
+        }
+        
+        [data-theme="minimal"] input[type="text"],
+        [data-theme="minimal"] input[type="email"],
+        [data-theme="minimal"] input[type="tel"],
+        [data-theme="minimal"] input[type="password"],
+        [data-theme="minimal"] input[type="search"] {
+            color: #404040 !important;
+            -webkit-text-fill-color: #404040 !important;
+        }
+        .error-message { 
+            color: #dc2626; 
+            font-size: 12px; 
+            margin-top: 4px; 
+            display: flex; 
+            align-items: center; 
+            gap: 4px; 
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-b from-slate-50 to-white text-slate-900" x-data="{ 
+    step: 1,
+    init() {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        if (savedTheme && savedTheme !== 'light') {
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        }
+    },
+    formData: { firstName: '', lastName: '', email: '', address: '', city: '', state: '', zip: '', phone: '', cardName: '', cardNumber: '', expiry: '', cvv: '' },
+    shippingErrors: { firstName: false, email: false, address: false, phone: false },
+    paymentErrors: { cardName: false, cardNumber: false, expiry: false, cvv: false },
+    subtotal: 305,
+    shipping: 0,
+    validateShipping() {
+        this.shippingErrors = { firstName: false, email: false, address: false, phone: false };
+        let isValid = true;
+        
+        if (!this.formData.firstName || this.formData.firstName.trim() === '') {
+            this.shippingErrors.firstName = true;
+            isValid = false;
+        }
+        
+        if (!this.formData.email || !this.formData.email.includes('@')) {
+            this.shippingErrors.email = true;
+            isValid = false;
+        }
+        
+        if (!this.formData.address || this.formData.address.trim() === '') {
+            this.shippingErrors.address = true;
+            isValid = false;
+        }
+        
+        if (!this.formData.phone || this.formData.phone.trim() === '') {
+            this.shippingErrors.phone = true;
+            isValid = false;
+        }
+        
+        if (isValid) {
+            this.step = 2;
+        }
+        return isValid;
+    },
+    validateCardNumber(num) {
+        const cleaned = num.replace(/\s/g, '');
+        return /^\d{13,19}$/.test(cleaned);
+    },
+    validateExpiry(exp) {
+        const regex = /^(0[1-9]|1[0-2])\/\d{2}$/;
+        if (!regex.test(exp)) return false;
+        const [month, year] = exp.split('/');
+        const currentYear = new Date().getFullYear();
+        const expYear = 2000 + parseInt(year);
+        const expDate = new Date(expYear, parseInt(month), 0);
+        return expDate > new Date();
+    },
+    validateCVV(cvv) {
+        return /^\d{3,4}$/.test(cvv.replace(/\s/g, ''));
+    },
+    validatePayment() {
+        this.paymentErrors = { cardName: false, cardNumber: false, expiry: false, cvv: false };
+        let isValid = true;
+        
+        if (!this.formData.cardName || this.formData.cardName.trim() === '') {
+            this.paymentErrors.cardName = true;
+            isValid = false;
+        }
+        
+        if (!this.validateCardNumber(this.formData.cardNumber)) {
+            this.paymentErrors.cardNumber = true;
+            isValid = false;
+        }
+        
+        if (!this.validateExpiry(this.formData.expiry)) {
+            this.paymentErrors.expiry = true;
+            isValid = false;
+        }
+        
+        if (!this.validateCVV(this.formData.cvv)) {
+            this.paymentErrors.cvv = true;
+            isValid = false;
+        }
+        
+        if (isValid) {
+            this.formData.firstName && localStorage.setItem('clientName', this.formData.firstName);
+            window.location.href = 'thankyou.html';
+        }
+        return isValid;
+    }
+}" x-init="if(localStorage.getItem('clientName')) formData.firstName = localStorage.getItem('clientName')">
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-100 px-8 py-4 flex justify-between items-center shadow-sm">
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 bg-slate-900 rounded-full flex items-center justify-center">
+                <span class="text-white font-serif text-sm font-bold">✦</span>
+            </div>
+            <div class="text-xl font-bold tracking-[0.2em] uppercase serif">Bijoux</div>
+        </div>
+        <a href="index.html" class="text-sm text-slate-600 hover:text-slate-900 transition">← Continue Shopping</a>
+    </nav>
+
+    <!-- Progress Indicator -->
+    <div class="bg-white border-b border-slate-100 px-8 py-8">
+        <div class="max-w-6xl mx-auto">
+            <div class="flex items-center justify-between max-w-md">
+                <div class="flex flex-col items-center flex-1">
+                    <div class="step-circle active w-12 h-12 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold mb-3">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                    <p class="text-xs uppercase font-semibold tracking-widest">Shipping</p>
+                </div>
+                <div class="flex-1 h-0.5 bg-gradient-to-r from-slate-900 to-slate-300 mx-4 mb-8"></div>
+                <div class="flex flex-col items-center flex-1">
+                    <div class="step-circle w-12 h-12 rounded-full" :class="step >= 2 ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-400'" x-text="step >= 2 ? '✓' : '2'" style="display: flex; align-items: center; justify-content: center; font-weight: bold;"></div>
+                    <p class="text-xs uppercase font-semibold tracking-widest" :class="step >= 2 ? 'text-slate-900' : 'text-slate-400'">Payment</p>
+                </div>
+                <div class="flex-1 h-0.5 bg-slate-200 mx-4 mb-8"></div>
+                <div class="flex flex-col items-center flex-1">
+                    <div class="step-circle w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center font-bold">3</div>
+                    <p class="text-xs uppercase font-semibold tracking-widest text-slate-400">Complete</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <main class="min-h-[calc(100vh-200px)]">
+        <div class="max-w-6xl mx-auto px-8 py-16">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                
+                <!-- Main Form -->
+                <div class="lg:col-span-7">
+
+                    <!-- Shipping Form -->
+                    <section x-show="step === 1" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform translate-y-4" x-transition:enter-end="opacity-100 transform translate-y-0">
+                        <div class="mb-12">
+                            <h2 class="serif text-3xl italic mb-2">Shipping Address</h2>
+                            <p class="text-slate-500 text-sm">Where should we send your treasures?</p>
+                        </div>
+
+                        <form class="space-y-8" @submit.prevent>
+                            <div class="grid grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-xs uppercase tracking-widest font-semibold mb-3" style="color: var(--text-secondary);">Full Name * <span class="text-red-500">required</span></label>
+                                    <input type="text" x-model="formData.firstName" @input="shippingErrors.firstName = false" :class="{ 'error': shippingErrors.firstName }" placeholder="Your Full Name" style="width: 100%; padding: 12px 0; border: none; border-bottom: 1px solid var(--border-color); background: transparent; color: #1e293b !important; -webkit-text-fill-color: #1e293b !important; font-size: 14px; font-weight: 400; line-height: 1.5; pointer-events: auto; cursor: text; z-index: 1000; position: relative; font-family: 'Inter', sans-serif; letter-spacing: 0;">
+                                    <div x-show="shippingErrors.firstName" class="error-message">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+                                        Please enter your name
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs uppercase tracking-widest font-semibold mb-3" style="color: var(--text-secondary);">Email Address * <span class="text-red-500">required</span></label>
+                                    <input type="email" x-model="formData.email" @input="shippingErrors.email = false" :class="{ 'error': shippingErrors.email }" placeholder="your@email.com" style="width: 100%; padding: 12px 0; border: none; border-bottom: 1px solid var(--border-color); background: transparent; color: #1e293b !important; -webkit-text-fill-color: #1e293b !important; font-size: 14px; font-weight: 400; line-height: 1.5; pointer-events: auto; cursor: text; z-index: 1000; position: relative; font-family: 'Inter', sans-serif; letter-spacing: 0;">
+                                    <div x-show="shippingErrors.email" class="error-message">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+                                        Please enter a valid email
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs uppercase tracking-widest font-semibold mb-3" style="color: var(--text-secondary);">Street Address * <span class="text-red-500">required</span></label>
+                                <input type="text" x-model="formData.address" @input="shippingErrors.address = false" :class="{ 'error': shippingErrors.address }" placeholder="123 Elegant Street" style="width: 100%; padding: 12px 0; border: none; border-bottom: 1px solid var(--border-color); background: transparent; color: #1e293b !important; -webkit-text-fill-color: #1e293b !important; font-size: 14px; font-weight: 400; line-height: 1.5; pointer-events: auto; cursor: text; z-index: 1000; position: relative; font-family: 'Inter', sans-serif; letter-spacing: 0;">
+                                <div x-show="shippingErrors.address" class="error-message">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+                                    Please enter your address
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-xs uppercase tracking-widest font-semibold mb-3" style="color: var(--text-secondary);">City</label>
+                                    <input type="text" x-model="formData.city" placeholder="New York" style="width: 100%; padding: 12px 0; border: none; border-bottom: 1px solid var(--border-color); background: transparent; color: #1e293b !important; -webkit-text-fill-color: #1e293b !important; font-size: 14px; font-weight: 400; line-height: 1.5; pointer-events: auto; cursor: text; z-index: 1000; position: relative; font-family: 'Inter', sans-serif; letter-spacing: 0;">
+                                </div>
+                                <div>
+                                    <label class="block text-xs uppercase tracking-widest font-semibold mb-3" style="color: var(--text-secondary);">Mobile Number * <span class="text-red-500">required</span></label>
+                                    <input type="tel" x-model="formData.phone" @input="shippingErrors.phone = false" :class="{ 'error': shippingErrors.phone }" placeholder="+1 (555) 123-4567" style="width: 100%; padding: 12px 0; border: none; border-bottom: 1px solid var(--border-color); background: transparent; color: #1e293b !important; -webkit-text-fill-color: #1e293b !important; font-size: 14px; font-weight: 400; line-height: 1.5; pointer-events: auto; cursor: text; z-index: 1000; position: relative; font-family: 'Inter', sans-serif; letter-spacing: 0;">
+                                    <div x-show="shippingErrors.phone" class="error-message">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+                                        Please enter your mobile number
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs uppercase tracking-widest font-semibold mb-3" style="color: var(--text-secondary);">State</label>
+                                <input type="text" x-model="formData.state" placeholder="NY" style="width: 100%; padding: 12px 0; border: none; border-bottom: 1px solid var(--border-color); background: transparent; color: #1e293b !important; -webkit-text-fill-color: #1e293b !important; font-size: 14px; font-weight: 400; line-height: 1.5; pointer-events: auto; cursor: text; z-index: 1000; position: relative; font-family: 'Inter', sans-serif; letter-spacing: 0;">
+                            </div>
+
+                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 flex gap-3 mt-8">
+                                <svg class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <p class="text-sm text-blue-800">All fields marked with <span class="font-bold">*</span> are required to proceed to payment.</p>
+                            </div>
+
+                            <button type="button" @click="validateShipping()" class="w-full bg-slate-900 text-white py-4 text-[11px] uppercase font-bold tracking-[0.2em] rounded-lg hover:bg-slate-800 transition duration-300 mt-12">
+                                Continue to Payment
+                            </button>
+                        </form>
+                    </section>
+
+                    <!-- Payment Form -->
+                    <section x-show="step === 2" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform translate-y-4" x-transition:enter-end="opacity-100 transform translate-y-0">
+                        <div class="mb-12">
+                            <h2 class="serif text-3xl italic mb-2">Billing & Payment</h2>
+                            <p class="text-slate-500 text-sm">Complete your payment to finalize your order</p>
+                        </div>
+
+                        <form class="space-y-8" @submit.prevent>
+                            <div>
+                                <label class="block text-xs uppercase tracking-widest font-semibold mb-3" style="color: var(--text-secondary);">Cardholder Name * <span class="text-red-500">required</span></label>
+                                <input type="text" x-model="formData.cardName" @input="paymentErrors.cardName = false" :class="{ 'error': paymentErrors.cardName }" placeholder="John Doe" style="width: 100%; padding: 12px 0; border: none; border-bottom: 1px solid var(--border-color); background: transparent; color: #1e293b !important; -webkit-text-fill-color: #1e293b !important; font-size: 14px; font-weight: 400; line-height: 1.5; pointer-events: auto; cursor: text; z-index: 1000; position: relative; font-family: 'Inter', sans-serif; letter-spacing: 0;">
+                                <div x-show="paymentErrors.cardName" class="error-message">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+                                    Cardholder name is required
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs uppercase tracking-widest font-semibold mb-3" style="color: var(--text-secondary);">Card Number * <span class="text-red-500">(13-19 digits)</span></label>
+                                <input type="text" x-model="formData.cardNumber" @input="paymentErrors.cardNumber = false" :class="{ 'error': paymentErrors.cardNumber }" placeholder="4532 1234 5678 9010" maxlength="23" style="width: 100%; padding: 12px 0; border: none; border-bottom: 1px solid var(--border-color); background: transparent; color: #1e293b !important; -webkit-text-fill-color: #1e293b !important; font-size: 14px; font-weight: 400; line-height: 1.5; pointer-events: auto; cursor: text; z-index: 1000; position: relative; font-family: 'Inter', sans-serif; letter-spacing: 0;">
+                                <div x-show="paymentErrors.cardNumber" class="error-message">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+                                    Enter a valid card number (13-19 digits only)
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-xs uppercase tracking-widest font-semibold mb-3" style="color: var(--text-secondary);">Expiry * <span class="text-red-500">(MM/YY)</span></label>
+                                    <input type="text" x-model="formData.expiry" @input="paymentErrors.expiry = false" :class="{ 'error': paymentErrors.expiry }" placeholder="12/26" maxlength="5" style="width: 100%; padding: 12px 0; border: none; border-bottom: 1px solid var(--border-color); background: transparent; color: #1e293b !important; -webkit-text-fill-color: #1e293b !important; font-size: 14px; font-weight: 400; line-height: 1.5; pointer-events: auto; cursor: text; z-index: 1000; position: relative; font-family: 'Inter', sans-serif; letter-spacing: 0;">
+                                    <div x-show="paymentErrors.expiry" class="error-message">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+                                        Use MM/YY format (valid future date)
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs uppercase tracking-widest font-semibold mb-3" style="color: var(--text-secondary);">CVV * <span class="text-red-500">(3-4 digits)</span></label>
+                                    <input type="text" x-model="formData.cvv" @input="paymentErrors.cvv = false" :class="{ 'error': paymentErrors.cvv }" placeholder="123" maxlength="4" style="width: 100%; padding: 12px 0; border: none; border-bottom: 1px solid var(--border-color); background: transparent; color: #1e293b !important; -webkit-text-fill-color: #1e293b !important; font-size: 14px; font-weight: 400; line-height: 1.5; pointer-events: auto; cursor: text; z-index: 1000; position: relative; font-family: 'Inter', sans-serif; letter-spacing: 0;">
+                                    <div x-show="paymentErrors.cvv" class="error-message">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+                                        CVV must be 3-4 digits
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex gap-3">
+                                <svg class="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <p class="text-sm text-yellow-800"><strong>For testing use:</strong> Card: 4532191488430343, Exp: 12/26, CVV: 123</p>
+                            </div>
+
+                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 flex gap-3">
+                                <svg class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <p class="text-sm text-blue-800">🔒 This is a secure checkout. Your payment information is encrypted and safe.</p>
+                            </div>
+
+                            <div class="flex gap-3 mt-12">
+                                <button type="button" @click="step = 1" class="w-1/3 border-2 border-slate-200 text-slate-900 py-4 text-[11px] uppercase font-bold tracking-[0.2em] rounded-lg hover:bg-slate-50 transition duration-300">
+                                    Back
+                                </button>
+                                <button type="button" @click="validatePayment()" class="w-2/3 bg-emerald-600 text-white py-4 text-[11px] uppercase font-bold tracking-[0.2em] rounded-lg hover:bg-emerald-700 transition duration-300">
+                                    Complete Order
+                                </button>
+                            </div>
+                        </form>
+                    </section>
+
+                </div>
+
+                <!-- Order Summary Sidebar -->
+                <div class="lg:col-span-5">
+                    <div class="sticky top-20 bg-white rounded-xl border border-slate-200 shadow-lg p-8">
+                        <h3 class="serif text-2xl italic mb-8 text-slate-900">Order Summary</h3>
+                        
+                        <div class="space-y-6 mb-8 pb-8 border-b border-slate-200">
+                            <div class="flex gap-4">
+                                <div class="relative w-24 h-24 bg-slate-100 rounded-lg overflow-hidden flex-shrink-0">
+                                    <img src="https://images.unsplash.com/photo-1635767798638-3e25273a8236?auto=format&fit=crop&q=80&w=200" class="w-full h-full object-cover">
+                                    <span class="absolute -top-2 -right-2 bg-slate-900 text-white text-xs w-6 h-6 rounded-full flex items-center justify-center font-bold">1</span>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="text-sm font-bold text-slate-900 mb-1">Crescent Silver Ring</h4>
+                                    <p class="text-xs text-slate-500 mb-2">925 Sterling Silver</p>
+                                    <p class="text-sm font-semibold text-slate-900">$85.00</p>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-4">
+                                <div class="relative w-24 h-24 bg-slate-100 rounded-lg overflow-hidden flex-shrink-0">
+                                    <img src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&q=80&w=200" class="w-full h-full object-cover">
+                                    <span class="absolute -top-2 -right-2 bg-slate-900 text-white text-xs w-6 h-6 rounded-full flex items-center justify-center font-bold">1</span>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="text-sm font-bold text-slate-900 mb-1">Pearl Necklace</h4>
+                                    <p class="text-xs text-slate-500 mb-2">925 Sterling Silver</p>
+                                    <p class="text-sm font-semibold text-slate-900">$125.00</p>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-4">
+                                <div class="relative w-24 h-24 bg-slate-100 rounded-lg overflow-hidden flex-shrink-0">
+                                    <img src="https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=200" class="w-full h-full object-cover">
+                                    <span class="absolute -top-2 -right-2 bg-slate-900 text-white text-xs w-6 h-6 rounded-full flex items-center justify-center font-bold">1</span>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="text-sm font-bold text-slate-900 mb-1">Minimalist Bracelet</h4>
+                                    <p class="text-xs text-slate-500 mb-2">925 Sterling Silver</p>
+                                    <p class="text-sm font-semibold text-slate-900">$95.00</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4 mb-8">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-slate-600">Subtotal</span>
+                                <span class="font-semibold">$305.00</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-slate-600">Shipping</span>
+                                <span class="font-semibold text-emerald-600">FREE</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-slate-600">Tax</span>
+                                <span class="font-semibold">$24.40</span>
+                            </div>
+                            <div class="pt-4 border-t border-slate-200 flex justify-between">
+                                <span class="font-bold text-slate-900">Total</span>
+                                <span class="serif text-2xl font-bold text-slate-900">$329.40</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-lg p-5 text-center">
+                            <p class="text-xs mb-2">🔒 SECURE CHECKOUT</p>
+                            <p class="text-[11px] text-slate-300">256-bit SSL Encrypted Payment</p>
+                        </div>
+
+                        <div class="mt-6 flex justify-center gap-3">
+                            <svg class="w-8 h-8 text-slate-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                            <svg class="w-8 h-8 text-slate-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                            <svg class="w-8 h-8 text-slate-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Trust Badges Footer -->
+    <div class="bg-slate-900 text-white py-8">
+        <div class="max-w-6xl mx-auto px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                <div>
+                    <p class="text-sm font-semibold mb-2">🔐 100% Secure</p>
+                    <p class="text-xs text-slate-400">SSL encrypted payments</p>
+                </div>
+                <div>
+                    <p class="text-sm font-semibold mb-2">✓ Buyer Protection</p>
+                    <p class="text-xs text-slate-400">Guaranteed satisfaction</p>
+                </div>
+                <div>
+                    <p class="text-sm font-semibold mb-2">📞 24/7 Support</p>
+                    <p class="text-xs text-slate-400">Always here to help</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

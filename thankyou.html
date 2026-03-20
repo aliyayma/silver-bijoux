@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thank You | Silver Bijoux</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+        
+        /* Dynamic Theme System */
+        :root {
+            --primary-dark: #1e293b;
+            --primary-light: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --accent-color: #0f172a;
+            --bg-secondary: #f1f5f9;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Dark Mode */
+        [data-theme="dark"] {
+            --primary-dark: #0f172a;
+            --primary-light: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --border-color: #334155;
+            --accent-color: #ffffff;
+            --bg-secondary: #0f172a;
+        }
+
+        /* Luxury Theme */
+        [data-theme="luxury"] {
+            --primary-dark: #1a1a1a;
+            --primary-light: #faf8f3;
+            --text-primary: #2c2c2c;
+            --text-secondary: #666666;
+            --border-color: #d4af37;
+            --accent-color: #d4af37;
+            --bg-secondary: #f5f1e8;
+        }
+
+        /* Modern Theme */
+        [data-theme="modern"] {
+            --primary-dark: #1a365d;
+            --primary-light: #f0f9ff;
+            --text-primary: #1a365d;
+            --text-secondary: #475569;
+            --border-color: #0284c7;
+            --accent-color: #0284c7;
+            --bg-secondary: #e0f2fe;
+        }
+
+        /* Minimal Theme */
+        [data-theme="minimal"] {
+            --primary-dark: #404040;
+            --primary-light: #ffffff;
+            --text-primary: #404040;
+            --text-secondary: #888888;
+            --border-color: #cccccc;
+            --accent-color: #404040;
+            --bg-secondary: #f7f7f7;
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            color: var(--text-primary);
+            background: var(--primary-light);
+            scroll-behavior: smooth;
+        }
+        .serif { font-family: 'Playfair Display', serif; }
+        [x-cloak] { display: none !important; }
+        
+        .pulse-check { animation: pulseCheck 0.6s ease-out forwards; }
+        @keyframes pulseCheck { 0% { opacity: 0; transform: scale(0); } 50% { opacity: 1; } 100% { opacity: 1; transform: scale(1); } }
+        .slide-up { animation: slideUp 0.8s ease-out forwards; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+    <script>
+        // Apply theme on page load
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            if (savedTheme && savedTheme !== 'light') {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+            }
+        })();
+    </script>
+</head>
+<body class="bg-white text-slate-900 h-screen flex items-center justify-center overflow-hidden" style="background-color: var(--primary-light); color: var(--text-primary); transition: all 0.3s ease;">
+
+    <div class="absolute top-0 left-0 w-64 h-64 border-l border-t border-slate-100 -translate-x-12 -translate-y-12" style="border-color: var(--border-color);"></div>
+    <div class="absolute bottom-0 right-0 w-64 h-64 border-r border-b border-slate-100 translate-x-12 translate-y-12" style="border-color: var(--border-color);"></div>
+
+    <main class="max-w-xl text-center px-8 relative z-10">
+        <div class="mb-10 inline-flex items-center justify-center w-20 h-20 rounded-full bg-slate-50 border border-slate-100 shadow-sm animate-bounce" style="background-color: var(--bg-secondary); border-color: var(--border-color);">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-slate-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="color: var(--text-primary);">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M5 13l4 4L19 7" />
+            </svg>
+        </div>
+
+        <span class="text-[10px] uppercase tracking-[0.5em] text-slate-400 block mb-4 italic">Order Confirmed</span>
+        <h1 class="serif text-5xl italic mb-6">
+</h1>
+
+<script>
+    // أول ما الصفحة تفتح، بنشوف هل فيه اسم متخزن؟
+    const savedName = localStorage.getItem('clientName');
+    if (savedName) {
+        document.getElementById('displayName').innerText = savedName;
+    }
+</script>
+        
+        <p class="text-sm text-slate-500 leading-relaxed mb-12 font-light">
+            Your silver treasures are being carefully polished and packed in our studio. We’ve sent a confirmation and tracking details to your inbox.
+        </p>
+        <div class="space-y-4">
+            <a href="index.html" class="block w-full bg-slate-900 text-white py-5 text-[10px] uppercase font-bold tracking-[0.3em] hover:bg-slate-700 transition duration-500">
+                Continue Exploring
+            </a>
+            <p class="text-[10px] text-slate-400">Questions? <a href="#" class="underline">Visit our concierge</a></p>
+        </div>
+    </main>
+
+</body>
+</html>
