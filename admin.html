@@ -156,6 +156,27 @@
                 >
                     💎 Products
                 </button>
+                <button 
+                    @click="activeTab = 'promo'"
+                    :class="activeTab === 'promo' ? 'border-b-2 border-slate-900 text-slate-900' : 'text-slate-600 hover:text-slate-900'"
+                    class="px-4 py-3 font-semibold text-sm transition"
+                >
+                    🎟️ Promo Codes
+                </button>
+                <button 
+                    @click="activeTab = 'faq'"
+                    :class="activeTab === 'faq' ? 'border-b-2 border-slate-900 text-slate-900' : 'text-slate-600 hover:text-slate-900'"
+                    class="px-4 py-3 font-semibold text-sm transition"
+                >
+                    ❓ FAQ
+                </button>
+                <button 
+                    @click="activeTab = 'theme'"
+                    :class="activeTab === 'theme' ? 'border-b-2 border-slate-900 text-slate-900' : 'text-slate-600 hover:text-slate-900'"
+                    class="px-4 py-3 font-semibold text-sm transition"
+                >
+                    🎨 Theme
+                </button>
             </div>
 
             <!-- ORDERS TAB -->
@@ -418,6 +439,349 @@
 
             </div>
 
+            <!-- PROMO CODES TAB -->
+            <div x-show="activeTab === 'promo'">
+
+                <!-- Header Section -->
+                <div class="mb-8">
+                    <h1 class="serif text-4xl italic text-slate-900 mb-2">Promo Codes & Discounts</h1>
+                    <p class="text-slate-600">Create and manage promotional codes for customer discounts</p>
+                </div>
+
+                <!-- Add Promo Code Section -->
+                <div class="bg-white rounded-lg shadow-sm p-8 mb-8 border border-slate-200">
+                    <h2 class="text-2xl font-bold text-slate-900 mb-6">Create New Promo Code</h2>
+                    <form @submit.prevent="addPromoCode" class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-2">Promo Code *</label>
+                                <input 
+                                    type="text" 
+                                    x-model="newPromo.code"
+                                    placeholder="e.g., SUMMER20"
+                                    class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900 bg-slate-50 uppercase"
+                                    required
+                                >
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-2">Description</label>
+                                <input 
+                                    type="text" 
+                                    x-model="newPromo.description"
+                                    placeholder="e.g., Summer Sale 20% Off"
+                                    class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900 bg-slate-50"
+                                >
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-2">Discount Type *</label>
+                                <select 
+                                    x-model="newPromo.type"
+                                    class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900 bg-slate-50"
+                                    required
+                                >
+                                    <option value="">Select type</option>
+                                    <option value="percentage">Percentage (%)</option>
+                                    <option value="fixed">Fixed Amount ($)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-2">Discount Value *</label>
+                                <input 
+                                    type="number" 
+                                    x-model.number="newPromo.value"
+                                    placeholder="e.g., 20"
+                                    step="0.01"
+                                    min="0"
+                                    class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900 bg-slate-50"
+                                    required
+                                >
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-2">Min. Purchase Amount</label>
+                                <input 
+                                    type="number" 
+                                    x-model.number="newPromo.minPurchase"
+                                    placeholder="0 for no minimum"
+                                    step="0.01"
+                                    min="0"
+                                    class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900 bg-slate-50"
+                                >
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-2">Valid From</label>
+                                <input 
+                                    type="date" 
+                                    x-model="newPromo.validFrom"
+                                    class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900 bg-slate-50"
+                                >
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-2">Valid Until</label>
+                                <input 
+                                    type="date" 
+                                    x-model="newPromo.validUntil"
+                                    class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900 bg-slate-50"
+                                >
+                            </div>
+                        </div>
+                        <div>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input 
+                                    type="checkbox" 
+                                    x-model="newPromo.active"
+                                    class="w-4 h-4"
+                                >
+                                <span class="text-sm font-semibold text-slate-700">Active</span>
+                            </label>
+                        </div>
+                        <button 
+                            type="submit"
+                            class="w-full bg-slate-900 text-white font-bold py-3 rounded-lg hover:bg-slate-800 transition duration-300 uppercase tracking-widest text-sm mt-6"
+                        >
+                            + Create Promo Code
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Promo Codes List -->
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                    <div class="p-6 border-b border-slate-200 bg-slate-50">
+                        <h2 class="text-xl font-bold text-slate-900">Active Promo Codes (<span x-text="promoCodes.filter(p => p.active).length"></span>/<span x-text="promoCodes.length"></span>)</h2>
+                    </div>
+
+                    <template x-if="promoCodes.length === 0">
+                        <div class="p-8 text-center text-slate-500">
+                            <p class="text-base mb-2">No promo codes yet</p>
+                            <p class="text-xs">Create your first promo code using the form above</p>
+                        </div>
+                    </template>
+
+                    <div class="overflow-x-auto" x-show="promoCodes.length > 0">
+                        <table class="w-full text-sm">
+                            <thead class="bg-slate-900 text-white">
+                                <tr>
+                                    <th class="px-6 py-4 text-left font-semibold">Code</th>
+                                    <th class="px-6 py-4 text-left font-semibold">Discount</th>
+                                    <th class="px-6 py-4 text-left font-semibold">Min. Purchase</th>
+                                    <th class="px-6 py-4 text-center font-semibold">Status</th>
+                                    <th class="px-6 py-4 text-center font-semibold">Valid Until</th>
+                                    <th class="px-6 py-4 text-center font-semibold">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template x-for="promo in promoCodes" :key="promo.id">
+                                    <tr class="border-b border-slate-200 hover:bg-slate-50 transition">
+                                        <td class="px-6 py-4 font-mono font-bold text-slate-900" x-text="promo.code"></td>
+                                        <td class="px-6 py-4">
+                                            <div class="font-semibold text-slate-900">
+                                                <span x-show="promo.type === 'percentage'" x-text="promo.value + '%'"></span>
+                                                <span x-show="promo.type === 'fixed'" x-text="'$' + promo.value.toFixed(2)"></span>
+                                            </div>
+                                            <div class="text-xs text-slate-600" x-text="promo.description"></div>
+                                        </td>
+                                        <td class="px-6 py-4 text-slate-600">
+                                            <span x-show="promo.minPurchase > 0" x-text="'$' + promo.minPurchase.toFixed(2)"></span>
+                                            <span x-show="promo.minPurchase === 0" class="text-xs text-slate-500">No minimum</span>
+                                        </td>
+                                        <td class="px-6 py-4 text-center">
+                                            <span x-show="promo.active" class="inline-block bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-xs font-bold">Active</span>
+                                            <span x-show="!promo.active" class="inline-block bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-xs font-bold">Inactive</span>
+                                        </td>
+                                        <td class="px-6 py-4 text-center text-slate-600 text-xs">
+                                            <span x-show="promo.validUntil" x-text="new Date(promo.validUntil).toLocaleDateString()"></span>
+                                            <span x-show="!promo.validUntil" class="text-slate-500">No expiry</span>
+                                        </td>
+                                        <td class="px-6 py-4 text-center">
+                                            <div class="flex gap-2 justify-center">
+                                                <button 
+                                                    @click="togglePromoActive(promo.id)"
+                                                    :class="promo.active ? 'bg-red-600 hover:bg-red-700' : 'bg-emerald-600 hover:bg-emerald-700'"
+                                                    class="px-3 py-1 text-xs font-semibold text-white rounded transition"
+                                                >
+                                                    <span x-show="promo.active">Disable</span>
+                                                    <span x-show="!promo.active">Enable</span>
+                                                </button>
+                                                <button 
+                                                    @click="deletePromoCode(promo.id)"
+                                                    class="px-3 py-1 text-xs font-semibold text-white bg-red-600 hover:bg-red-700 rounded transition"
+                                                >
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- FAQ TAB -->
+            <div x-show="activeTab === 'faq'">
+
+                <!-- Header Section -->
+                <div class="mb-8">
+                    <h1 class="serif text-4xl italic text-slate-900 mb-2">FAQ Management</h1>
+                    <p class="text-slate-600">Add, edit, and manage frequently asked questions</p>
+                </div>
+
+                <!-- Add FAQ Section -->
+                <div class="bg-white rounded-lg shadow-sm p-8 mb-8 border border-slate-200">
+                    <h2 class="text-2xl font-bold text-slate-900 mb-6">Add New FAQ Item</h2>
+                    <form @submit.prevent="addFAQ" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Question *</label>
+                            <input 
+                                type="text" 
+                                x-model="newFAQ.question"
+                                placeholder="e.g., What is your return policy?"
+                                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900 bg-slate-50"
+                                required
+                            >
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Answer *</label>
+                            <textarea 
+                                x-model="newFAQ.answer"
+                                placeholder="e.g., We offer exchanges for 14 days from delivery..."
+                                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900 bg-slate-50 resize-none"
+                                rows="4"
+                                required
+                            ></textarea>
+                        </div>
+                        <button 
+                            type="submit"
+                            class="w-full bg-slate-900 text-white font-bold py-3 rounded-lg hover:bg-slate-800 transition duration-300 uppercase tracking-widest text-sm mt-6"
+                        >
+                            + Add FAQ Item
+                        </button>
+                    </form>
+                </div>
+
+                <!-- FAQ List -->
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                    <div class="p-6 border-b border-slate-200 bg-slate-50">
+                        <h2 class="text-xl font-bold text-slate-900">FAQ Items (<span x-text="faqs.length"></span>)</h2>
+                    </div>
+
+                    <template x-if="faqs.length === 0">
+                        <div class="p-8 text-center text-slate-500">
+                            <p class="text-base mb-2">No FAQ items yet</p>
+                            <p class="text-xs">Create your first FAQ item using the form above</p>
+                        </div>
+                    </template>
+
+                    <div class="space-y-3 p-6" x-show="faqs.length > 0">
+                        <template x-for="faq in faqs" :key="faq.id">
+                            <div class="border border-slate-200 rounded-lg p-4 hover:shadow-md transition">
+                                <div class="flex gap-4">
+                                    <div class="flex-1">
+                                        <h3 class="font-bold text-slate-900 mb-2" x-text="faq.question"></h3>
+                                        <p class="text-slate-600 text-sm leading-relaxed" x-text="faq.answer"></p>
+                                    </div>
+                                    <button 
+                                        @click="deleteFAQ(faq.id)"
+                                        class="px-3 py-1 text-xs font-semibold text-white bg-red-600 hover:bg-red-700 rounded transition h-fit whitespace-nowrap"
+                                    >
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- THEME TAB -->
+            <div x-show="activeTab === 'theme'">
+
+                <!-- Header Section -->
+                <div class="mb-8">
+                    <h1 class="serif text-4xl italic text-slate-900 mb-2">Theme Management</h1>
+                    <p class="text-slate-600">Customize the website appearance and set default theme</p>
+                </div>
+
+                <!-- Current Theme Info -->
+                <div class="bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-lg shadow-sm p-8 mb-8">
+                    <p class="text-sm font-semibold mb-2 uppercase tracking-widest text-slate-300">Current Active Theme</p>
+                    <h2 class="serif text-3xl italic mb-4" x-text="themes.find(t => t.value === currentTheme)?.name || 'Light'"></h2>
+                    <p class="text-slate-200 text-sm">This theme is displayed to all website visitors</p>
+                </div>
+
+                <!-- Theme Selection Grid -->
+                <div class="mb-8">
+                    <h2 class="text-2xl font-bold text-slate-900 mb-6">Available Themes</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                        <template x-for="theme in themes" :key="theme.value">
+                            <div 
+                                @click="setTheme(theme.value)"
+                                class="cursor-pointer rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 border-4"
+                                :style="currentTheme === theme.value ? 'border-color: var(--accent-color); border-width: 4px;' : 'border-color: #e2e8f0; border-width: 2px;'"
+                            >
+                                <!-- Theme Preview -->
+                                <div class="h-24" :style="getThemePreview(theme.value)"></div>
+                                
+                                <!-- Theme Info -->
+                                <div class="p-4 bg-white">
+                                    <p class="text-2xl mb-2" x-text="theme.icon"></p>
+                                    <h3 class="font-bold text-slate-900 mb-2" x-text="theme.name"></h3>
+                                    <button 
+                                        @click.stop="setTheme(theme.value)"
+                                        :class="currentTheme === theme.value ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-900 hover:bg-slate-200'"
+                                        class="w-full px-3 py-2 rounded text-xs font-semibold transition"
+                                    >
+                                        <span x-show="currentTheme === theme.value">✓ Active</span>
+                                        <span x-show="currentTheme !== theme.value">Select</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- Theme Details Card -->
+                <div class="bg-white rounded-lg shadow-sm p-8 border border-slate-200">
+                    <h2 class="text-2xl font-bold text-slate-900 mb-6">Current Theme Colors</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <template x-for="(colorVar, index) in getThemeColors()" :key="colorVar.name">
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-2" x-text="colorVar.name"></label>
+                                <div class="flex items-center gap-3">
+                                    <div 
+                                        class="w-12 h-12 rounded-lg shadow-sm border-2 border-slate-200"
+                                        :style="{backgroundColor: colorVar.value}"
+                                    ></div>
+                                    <div>
+                                        <p class="font-mono text-sm font-bold text-slate-900" x-text="colorVar.value"></p>
+                                        <p class="text-xs text-slate-500" x-text="colorVar.usage"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- Theme Description -->
+                <div class="mt-8 bg-blue-50 rounded-lg p-6 border border-blue-200">
+                    <h3 class="font-bold text-blue-900 mb-3">ℹ️ Theme Information</h3>
+                    <div class="text-sm text-blue-800 space-y-2">
+                        <p><span class="font-semibold">Light:</span> Clean, professional look perfect for daytime viewing</p>
+                        <p><span class="font-semibold">Dark:</span> Easy on the eyes with dark backgrounds and light text</p>
+                        <p><span class="font-semibold">Luxury:</span> Premium gold accents with elegant styling</p>
+                        <p><span class="font-semibold">Modern:</span> Contemporary deep blue with coral accents</p>
+                        <p><span class="font-semibold">Minimal:</span> Pure and simple with grayscale palette</p>
+                    </div>
+                </div>
+
+            </div>
+
         </div>
     </div>
 
@@ -631,15 +995,86 @@
                 sortBy: 'newest',
                 products: [],
                 newProduct: { name: '', price: 0, category: '', image: '' },
+                promoCodes: [],
+                newPromo: { code: '', description: '', type: '', value: 0, minPurchase: 0, validFrom: '', validUntil: '', active: true },
+                faqs: [],
+                newFAQ: { question: '', answer: '' },
+                currentTheme: localStorage.getItem('adminTheme') || 'light',
+                themes: [
+                    {name: 'Light', value: 'light', icon: '☀️'},
+                    {name: 'Dark', value: 'dark', icon: '🌙'},
+                    {name: 'Luxury', value: 'luxury', icon: '👑'},
+                    {name: 'Modern', value: 'modern', icon: '⚡'},
+                    {name: 'Minimal', value: 'minimal', icon: '◇'}
+                ],
+                themeColors: {
+                    light: {
+                        'Primary Dark': '#1e293b',
+                        'Primary Light': '#ffffff',
+                        'Text Primary': '#1e293b',
+                        'Text Secondary': '#64748b',
+                        'Border Color': '#e2e8f0',
+                        'Accent Color': '#0f172a',
+                        'Background Secondary': '#f1f5f9'
+                    },
+                    dark: {
+                        'Primary Dark': '#0f172a',
+                        'Primary Light': '#1e293b',
+                        'Text Primary': '#f1f5f9',
+                        'Text Secondary': '#cbd5e1',
+                        'Border Color': '#334155',
+                        'Accent Color': '#ffffff',
+                        'Background Secondary': '#0f172a'
+                    },
+                    luxury: {
+                        'Primary Dark': '#1a1a1a',
+                        'Primary Light': '#faf8f3',
+                        'Text Primary': '#2c2c2c',
+                        'Text Secondary': '#666666',
+                        'Border Color': '#d4af37',
+                        'Accent Color': '#d4af37',
+                        'Background Secondary': '#f5f1e8'
+                    },
+                    modern: {
+                        'Primary Dark': '#1a365d',
+                        'Primary Light': '#f0f9ff',
+                        'Text Primary': '#1a365d',
+                        'Text Secondary': '#475569',
+                        'Border Color': '#0284c7',
+                        'Accent Color': '#0284c7',
+                        'Background Secondary': '#e0f2fe'
+                    },
+                    minimal: {
+                        'Primary Dark': '#404040',
+                        'Primary Light': '#ffffff',
+                        'Text Primary': '#404040',
+                        'Text Secondary': '#888888',
+                        'Border Color': '#cccccc',
+                        'Accent Color': '#404040',
+                        'Background Secondary': '#f7f7f7'
+                    }
+                },
                 adminPassword: '29281625Ali',
 
                 init() {
                     this.loadOrders();
                     this.loadProducts();
+                    this.loadPromoCodes();
+                    this.loadFAQs();
                     // Check if already logged in
                     if (localStorage.getItem('adminLoggedIn') === 'true') {
                         this.isLoggedIn = true;
                     }
+                    // Apply saved theme to admin panel
+                    const savedTheme = this.currentTheme;
+                    if (savedTheme && savedTheme !== 'light') {
+                        document.documentElement.setAttribute('data-theme', savedTheme);
+                    }
+                    // Listen for global theme changes
+                    window.addEventListener('themeChanged', (e) => {
+                        this.currentTheme = e.detail.theme;
+                        document.documentElement.setAttribute('data-theme', e.detail.theme);
+                    });
                 },
 
                 login() {
@@ -791,6 +1226,156 @@
                         this.saveProducts();
                         alert('Product deleted successfully!');
                     }
+                },
+
+                // PROMO CODE MANAGEMENT METHODS
+                loadPromoCodes() {
+                    const saved = localStorage.getItem('promoCodes');
+                    this.promoCodes = saved ? JSON.parse(saved) : [];
+                },
+
+                savePromoCodes() {
+                    localStorage.setItem('promoCodes', JSON.stringify(this.promoCodes));
+                },
+
+                addPromoCode() {
+                    if (!this.newPromo.code.trim() || !this.newPromo.type || this.newPromo.value <= 0) {
+                        alert('Please fill in all required fields');
+                        return;
+                    }
+
+                    // Check if code already exists
+                    if (this.promoCodes.some(p => p.code.toUpperCase() === this.newPromo.code.toUpperCase())) {
+                        alert('This promo code already exists!');
+                        return;
+                    }
+
+                    const newId = Math.max(...this.promoCodes.map(p => p.id), 0) + 1;
+                    this.promoCodes.push({
+                        id: newId,
+                        code: this.newPromo.code.toUpperCase(),
+                        description: this.newPromo.description,
+                        type: this.newPromo.type,
+                        value: parseFloat(this.newPromo.value),
+                        minPurchase: parseFloat(this.newPromo.minPurchase) || 0,
+                        validFrom: this.newPromo.validFrom || null,
+                        validUntil: this.newPromo.validUntil || null,
+                        active: this.newPromo.active,
+                        createdAt: new Date().toISOString(),
+                        timesUsed: 0
+                    });
+                    
+                    this.savePromoCodes();
+                    alert('Promo code created successfully!');
+                    this.newPromo = { code: '', description: '', type: '', value: 0, minPurchase: 0, validFrom: '', validUntil: '', active: true };
+                },
+
+                togglePromoActive(promoId) {
+                    const promo = this.promoCodes.find(p => p.id === promoId);
+                    if (promo) {
+                        promo.active = !promo.active;
+                        this.savePromoCodes();
+                    }
+                },
+
+                deletePromoCode(promoId) {
+                    if (confirm('Are you sure you want to delete this promo code? This action cannot be undone.')) {
+                        this.promoCodes = this.promoCodes.filter(p => p.id !== promoId);
+                        this.savePromoCodes();
+                        alert('Promo code deleted successfully!');
+                    }
+                },
+
+                // FAQ MANAGEMENT METHODS
+                loadFAQs() {
+                    const saved = localStorage.getItem('faqs');
+                    if (saved) {
+                        this.faqs = JSON.parse(saved);
+                    } else {
+                        // Initialize with default FAQs
+                        this.faqs = [
+                            { id: 1, question: 'What materials do you use?', answer: 'All our pieces are crafted from 925 Sterling Silver, the highest standard for fine jewelry. Sterling Silver is durable, hypoallergenic, and perfect for everyday wear. Each piece undergoes strict quality control to ensure lasting beauty.' },
+                            { id: 2, question: 'Do you offer international shipping?', answer: 'Yes, we ship internationally! We offer FREE shipping on all orders. Delivery times vary by location, but typically range from 5-14 business days. Your order is fully insured during transit for your peace of mind.' },
+                            { id: 3, question: 'What payment methods do you accept?', answer: 'We accept payment via 30% deposit through Instapay or Vodafone Cash, with the remaining 70% due at delivery. This flexible payment option makes luxury jewelry accessible. Simply send a screenshot of your deposit transaction via WhatsApp or messaging app.' },
+                            { id: 4, question: 'How do I care for my jewelry?', answer: 'To keep your Silver Bijoux pieces looking beautiful: Store in a cool, dry place away from moisture. Avoid contact with harsh chemicals and perfumes. Clean gently with a soft, dry cloth when needed. Remove jewelry before swimming or showering. Have professionally cleaned once a year for optimal shine.' },
+                            { id: 5, question: 'Do you have a return or exchange policy?', answer: 'We want you to love your jewelry! If you\'re not completely satisfied, we offer exchanges for 14 days from delivery. Items must be unworn and in original condition. Please contact our support team to arrange an exchange. Custom orders and final sale items cannot be returned.' },
+                            { id: 6, question: 'Are there any size or custom options?', answer: 'Yes! We offer custom sizing and personalization options. Contact us via WhatsApp at 01023298989 or through our support widget for special requests. Custom pieces have a 10-14 day creation timeline. We\'ll work with you to bring your vision to life.' }
+                        ];
+                        this.saveFAQs();
+                    }
+                },
+
+                saveFAQs() {
+                    localStorage.setItem('faqs', JSON.stringify(this.faqs));
+                },
+
+                addFAQ() {
+                    if (!this.newFAQ.question.trim() || !this.newFAQ.answer.trim()) {
+                        alert('Please fill in both question and answer');
+                        return;
+                    }
+
+                    const newId = Math.max(...this.faqs.map(f => f.id), 0) + 1;
+                    this.faqs.push({
+                        id: newId,
+                        question: this.newFAQ.question,
+                        answer: this.newFAQ.answer
+                    });
+                    
+                    this.saveFAQs();
+                    alert('FAQ item added successfully!');
+                    this.newFAQ = { question: '', answer: '' };
+                },
+
+                deleteFAQ(faqId) {
+                    if (confirm('Are you sure you want to delete this FAQ item?')) {
+                        this.faqs = this.faqs.filter(f => f.id !== faqId);
+                        this.saveFAQs();
+                        alert('FAQ item deleted successfully!');
+                    }
+                },
+
+                // THEME MANAGEMENT METHODS
+                setTheme(theme) {
+                    this.currentTheme = theme;
+                    localStorage.setItem('adminTheme', theme);
+                    // Apply to the entire website
+                    document.documentElement.setAttribute('data-theme', theme);
+                    localStorage.setItem('theme', theme);
+                    // Dispatch event to notify other pages
+                    window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme } }));
+                    alert(`Theme changed to ${this.themes.find(t => t.value === theme)?.name}!`);
+                },
+
+                getThemeColors() {
+                    const colors = this.themeColors[this.currentTheme] || this.themeColors['light'];
+                    const colorUsage = {
+                        'Primary Dark': 'Main dark backgrounds',
+                        'Primary Light': 'Main light backgrounds',
+                        'Text Primary': 'Main text color',
+                        'Text Secondary': 'Secondary text',
+                        'Border Color': 'Borders and dividers',
+                        'Accent Color': 'Highlights and accents',
+                        'Background Secondary': 'Secondary backgrounds'
+                    };
+
+                    return Object.entries(colors).map(([name, value]) => ({
+                        name,
+                        value,
+                        usage: colorUsage[name] || ''
+                    }));
+                },
+
+                getThemePreview(themeValue) {
+                    const colorMap = {
+                        light: { bg: '#ffffff', accent: '#1e293b' },
+                        dark: { bg: '#1e293b', accent: '#f1f5f9' },
+                        luxury: { bg: '#1a1a1a', accent: '#d4af37' },
+                        modern: { bg: '#1a365d', accent: '#0284c7' },
+                        minimal: { bg: '#ffffff', accent: '#404040' }
+                    };
+                    const theme = colorMap[themeValue] || colorMap.light;
+                    return `background-color: ${theme.bg};`;
                 }
             }
         }

@@ -155,6 +155,10 @@
         if (savedTheme && savedTheme !== 'light') {
             document.documentElement.setAttribute('data-theme', savedTheme);
         }
+        // Listen for theme changes from admin panel
+        window.addEventListener('themeChanged', (e) => {
+            document.documentElement.setAttribute('data-theme', e.detail.theme);
+        });
         // Load cart from localStorage
         const savedCart = localStorage.getItem('cart');
         if (savedCart) {
@@ -165,6 +169,11 @@
     paymentMethod: 'deposit',
     paymentGateway: 'instapay',
     depositPhone: '01023298989',
+    promoCode: '',
+    appliedPromo: null,
+    discount: 0,
+    promoError: '',
+    promoSuccess: '',
     shippingErrors: { firstName: false, email: false, address: false, phone: false },
     paymentErrors: { cardName: false, cardNumber: false, expiry: false, cvv: false },
     get subtotal() {
@@ -177,7 +186,8 @@
         return this.subtotal + this.tax;
     },
     get depositAmount() {
-        return this.total * 0.30;
+        const finalTotal = this.total - this.discount;
+        return finalTotal * 0.30;
     },
     shipping: 0,
     validateShipping() {
@@ -225,6 +235,58 @@
     validateCVV(cvv) {
         return /^\d{3,4}$/.test(cvv.replace(/\s/g, ''));
     },
+    applyPromoCode() {
+        this.promoError = '';
+        this.promoSuccess = '';
+        this.discount = 0;
+        this.appliedPromo = null;
+
+        if (!this.promoCode.trim()) {
+            this.promoError = 'Please enter a promo code';
+            return;
+        }
+
+        // Load promo codes from localStorage
+        const promoCodes = JSON.parse(localStorage.getItem('promoCodes') || '[]');
+        const promo = promoCodes.find(p => p.code === this.promoCode.toUpperCase());
+
+        if (!promo) {
+            this.promoError = 'Invalid promo code';
+            return;
+        }
+
+        if (!promo.active) {
+            this.promoError = 'This promo code is no longer active';
+            return;
+        }
+
+        // Check expiry date
+        if (promo.validUntil) {
+            const expiryDate = new Date(promo.validUntil);
+            if (new Date() > expiryDate) {
+                this.promoError = 'This promo code has expired';
+                return;
+            }
+        }
+
+        // Check minimum purchase
+        if (promo.minPurchase && this.total < promo.minPurchase) {
+            this.promoError = `Minimum purchase of $${promo.minPurchase.toFixed(2)} required`;
+            return;
+        }
+
+        // Calculate discount
+        let discountAmount = 0;
+        if (promo.type === 'percentage') {
+            discountAmount = this.total * (promo.value / 100);
+        } else if (promo.type === 'fixed') {
+            discountAmount = promo.value;
+        }
+
+        this.discount = Math.min(discountAmount, this.total); // Can't exceed total
+        this.appliedPromo = promo;
+        this.promoSuccess = `${promo.description} - You saved $${this.discount.toFixed(2)}!`;
+    },
     validatePayment() {
         // Create complete order object
         const order = {
@@ -239,11 +301,13 @@
             items: this.cartItems,
             subtotal: this.subtotal,
             tax: this.tax,
-            total: this.total,
+            discount: this.discount,
+            appliedPromo: this.appliedPromo ? this.appliedPromo.code : null,
+            total: this.total - this.discount,
             paymentMethod: 'deposit',
             paymentGateway: this.paymentGateway,
             depositAmount: this.depositAmount,
-            remainingBalance: this.total - this.depositAmount,
+            remainingBalance: (this.total - this.discount) - this.depositAmount,
             status: 'pending',
             depositPhone: this.depositPhone,
             createdAt: new Date().toISOString(),
@@ -428,7 +492,7 @@
                                         <div class="pt-3 border-t border-emerald-200">
                                             <p class="text-xs text-emerald-700 mb-1">Amount to Pay:</p>
                                             <p class="text-xl font-bold text-emerald-900" x-text="'$' + depositAmount.toFixed(2)"></p>
-                                            <p class="text-xs text-emerald-600 mt-1">Remaining balance ($<span x-text="(total - depositAmount).toFixed(2)"></span>) due at delivery</p>
+                                            <p class="text-xs text-emerald-600 mt-1">Remaining balance ($<span x-text="((total - discount) - depositAmount).toFixed(2)"></span>) due at delivery</p>
                                         </div>
                                     </div>
                                 </div>
@@ -490,10 +554,46 @@
                                 <span class="text-slate-600">Tax</span>
                                 <span class="font-semibold" x-text="'$' + tax.toFixed(2)"></span>
                             </div>
+                            <template x-if="discount > 0">
+                                <div class="flex justify-between text-sm bg-emerald-50 p-2 rounded">
+                                    <span class="text-emerald-700 font-semibold">Discount</span>
+                                    <span class="font-bold text-emerald-600" x-text="'-$' + discount.toFixed(2)"></span>
+                                </div>
+                            </template>
                             <div class="pt-4 border-t border-slate-200 flex justify-between">
                                 <span class="font-bold text-slate-900">Total</span>
-                                <span class="serif text-2xl font-bold text-slate-900" x-text="'$' + total.toFixed(2)"></span>
+                                <span class="serif text-2xl font-bold text-slate-900" x-text="'$' + (total - discount).toFixed(2)"></span>
                             </div>
+                        </div>
+
+                        <!-- Promo Code Section -->
+                        <div class="mb-6 pb-6 border-b border-slate-200">
+                            <label class="block text-xs uppercase tracking-widest font-semibold mb-3" style="color: var(--text-secondary);">Have a Promo Code?</label>
+                            <div class="flex gap-2">
+                                <input 
+                                    type="text" 
+                                    x-model="promoCode" 
+                                    @keydown.enter="applyPromoCode()"
+                                    placeholder="Enter code"
+                                    class="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900 bg-slate-50 text-sm uppercase"
+                                    style="color: #1e293b !important; -webkit-text-fill-color: #1e293b !important;"
+                                >
+                                <button 
+                                    @click="applyPromoCode()"
+                                    class="px-4 py-2 bg-slate-900 text-white text-xs font-bold uppercase rounded-lg hover:bg-slate-800 transition"
+                                >
+                                    Apply
+                                </button>
+                            </div>
+                            <template x-if="promoError">
+                                <p class="text-red-600 text-xs mt-2" x-text="promoError"></p>
+                            </template>
+                            <template x-if="promoSuccess">
+                                <div class="bg-emerald-50 border border-emerald-300 rounded-lg p-3 mt-3">
+                                    <p class="text-emerald-800 text-xs font-semibold mb-1">✓ Promo Applied!</p>
+                                    <p class="text-emerald-700 text-xs" x-text="promoSuccess"></p>
+                                </div>
+                            </template>
                         </div>
 
                         <div class="bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-lg p-5 text-center">
