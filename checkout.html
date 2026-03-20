@@ -226,11 +226,45 @@
         return /^\d{3,4}$/.test(cvv.replace(/\s/g, ''));
     },
     validatePayment() {
-        // Save order info and redirect to thank you
+        // Create complete order object
+        const order = {
+            id: 'ORD-' + Date.now(),
+            customerName: this.formData.firstName + ' ' + this.formData.lastName,
+            email: this.formData.email,
+            phone: this.formData.phone,
+            address: this.formData.address,
+            city: this.formData.city,
+            state: this.formData.state,
+            zip: this.formData.zip,
+            items: this.cartItems,
+            subtotal: this.subtotal,
+            tax: this.tax,
+            total: this.total,
+            paymentMethod: 'deposit',
+            paymentGateway: this.paymentGateway,
+            depositAmount: this.depositAmount,
+            remainingBalance: this.total - this.depositAmount,
+            status: 'pending',
+            depositPhone: this.depositPhone,
+            createdAt: new Date().toISOString(),
+            confirmedAt: null,
+            notes: ''
+        };
+
+        // Save order to localStorage
+        let orders = JSON.parse(localStorage.getItem('orders') || '[]');
+        orders.push(order);
+        localStorage.setItem('orders', JSON.stringify(orders));
+
+        // Save individual fields for backward compatibility
         this.formData.firstName && localStorage.setItem('clientName', this.formData.firstName);
         localStorage.setItem('paymentMethod', 'deposit');
         localStorage.setItem('paymentGateway', this.paymentGateway);
         localStorage.setItem('depositAmount', this.depositAmount.toFixed(2));
+        
+        // Clear cart after order
+        localStorage.removeItem('cart');
+        
         window.location.href = 'thankyou.html';
         return true;
     }

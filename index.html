@@ -211,6 +211,20 @@
         if (savedTheme && savedTheme !== 'light') {
             document.documentElement.setAttribute('data-theme', savedTheme);
         }
+        // Load cart from localStorage
+        const savedCart = localStorage.getItem('cart');
+        if (savedCart) {
+            this.cartItems = JSON.parse(savedCart);
+        }
+        // Load products from admin panel
+        const savedProducts = localStorage.getItem('products');
+        if (savedProducts) {
+            this.products = JSON.parse(savedProducts);
+        }
+        // Watch for cart changes and save to localStorage
+        this.$watch('cartItems', (value) => {
+            localStorage.setItem('cart', JSON.stringify(value));
+        }, { deep: true });
     },
     cartItems: [], 
     supportOpen: false, 
@@ -284,6 +298,11 @@
                 </svg>
                 <span x-show="cartItems.length > 0" x-cloak class="bg-slate-900 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold" x-text="cartItems.length" style="background-color: var(--accent-color); color: var(--primary-light); transition: all 0.3s ease;"></span>
             </button>
+
+            <!-- Admin Panel Link -->
+            <a href="admin.html" class="text-xs font-semibold text-slate-500 hover:text-slate-900 transition-colors duration-200 border border-slate-300 rounded px-2 py-1 hover:border-slate-900" title="Admin Dashboard" style="color: var(--text-secondary); border-color: var(--border-color); transition: all 0.3s ease;">
+                ⚙️ Admin
+            </a>
 
             <!-- Mobile Menu Toggle -->
             <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden text-slate-700 hover:text-slate-900 transition-colors duration-200" aria-label="Toggle menu" :aria-expanded="mobileMenuOpen" style="color: var(--text-secondary); transition: color 0.3s ease;">
@@ -426,7 +445,7 @@
             <div class="group product-card">
                 <div class="aspect-[4/5] bg-slate-100 mb-6 overflow-hidden relative rounded-sm">
                     <img src="https://images.unsplash.com/photo-1635767798638-3e25273a8236?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover group-hover:scale-105 transition duration-700" alt="Crescent Silver Ring - 925 Sterling Silver" loading="lazy">
-                    <button @click="cartItems.push({name: 'Crescent Silver Ring', price: 85}); cartOpen = true" class="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur py-3 px-4 text-[9px] uppercase font-bold tracking-widest opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0 rounded-sm hover:bg-white" aria-label="Add Crescent Silver Ring to cart">Add to Cart</button>
+                    <button @click="cartItems.push({id: 1, name: 'Crescent Silver Ring', price: 85, quantity: 1, image: 'https://images.unsplash.com/photo-1635767798638-3e25273a8236?auto=format&fit=crop&q=80&w=800'}); cartOpen = true" class="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur py-3 px-4 text-[9px] uppercase font-bold tracking-widest opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0 rounded-sm hover:bg-white" aria-label="Add Crescent Silver Ring to cart">Add to Cart</button>
                 </div>
                 <div class="space-y-2">
                     <h3 class="serif text-lg italic text-slate-900 group-hover:text-slate-700 transition-colors font-light">Crescent Silver Ring</h3>
@@ -439,7 +458,7 @@
             <div class="group product-card">
                 <div class="aspect-[4/5] bg-slate-100 mb-6 overflow-hidden relative rounded-sm">
                     <img src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover group-hover:scale-105 transition duration-700" alt="Pearl Silver Necklace - 925 Sterling Silver" loading="lazy">
-                    <button @click="cartItems.push({name: 'Pearl Silver Necklace', price: 125}); cartOpen = true" class="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur py-3 px-4 text-[9px] uppercase font-bold tracking-widest opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0 rounded-sm hover:bg-white" aria-label="Add Pearl Silver Necklace to cart">Add to Cart</button>
+                    <button @click="cartItems.push({id: 2, name: 'Pearl Silver Necklace', price: 125, quantity: 1, image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&q=80&w=800'}); cartOpen = true" class="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur py-3 px-4 text-[9px] uppercase font-bold tracking-widest opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0 rounded-sm hover:bg-white" aria-label="Add Pearl Silver Necklace to cart">Add to Cart</button>
                 </div>
                 <div class="space-y-2">
                     <h3 class="serif text-lg italic text-slate-900 group-hover:text-slate-700 transition-colors font-light">Pearl Silver Necklace</h3>
@@ -452,7 +471,7 @@
             <div class="group product-card">
                 <div class="aspect-[4/5] bg-slate-100 mb-6 overflow-hidden relative rounded-sm">
                     <img src="https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover group-hover:scale-105 transition duration-700" alt="Minimalist Bracelet - 925 Sterling Silver" loading="lazy">
-                    <button @click="cartItems.push({name: 'Minimalist Bracelet', price: 95}); cartOpen = true" class="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur py-3 px-4 text-[9px] uppercase font-bold tracking-widest opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0 rounded-sm hover:bg-white" aria-label="Add Minimalist Bracelet to cart">Add to Cart</button>
+                    <button @click="cartItems.push({id: 3, name: 'Minimalist Bracelet', price: 95, quantity: 1, image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=800'}); cartOpen = true" class="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur py-3 px-4 text-[9px] uppercase font-bold tracking-widest opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0 rounded-sm hover:bg-white" aria-label="Add Minimalist Bracelet to cart">Add to Cart</button>
                 </div>
                 <div class="space-y-2">
                     <h3 class="serif text-lg italic text-slate-900 group-hover:text-slate-700 transition-colors font-light">Minimalist Bracelet</h3>
