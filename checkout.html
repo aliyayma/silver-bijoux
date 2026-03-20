@@ -271,7 +271,7 @@
 
         // Check minimum purchase
         if (promo.minPurchase && this.total < promo.minPurchase) {
-            this.promoError = `Minimum purchase of $${promo.minPurchase.toFixed(2)} required`;
+            this.promoError = `Minimum purchase of £${promo.minPurchase.toFixed(2)} required`;
             return;
         }
 
@@ -285,7 +285,7 @@
 
         this.discount = Math.min(discountAmount, this.total); // Can't exceed total
         this.appliedPromo = promo;
-        this.promoSuccess = `${promo.description} - You saved $${this.discount.toFixed(2)}!`;
+        this.promoSuccess = `${promo.description} - You saved £${this.discount.toFixed(2)}!`;
     },
     validatePayment() {
         // Create complete order object
@@ -459,7 +459,7 @@
                                     <div class="flex-1">
                                         <h3 class="font-bold mb-1">💳 Deposit Payment (30%)</h3>
                                         <p class="text-sm text-slate-600 mb-2">Pay 30% deposit now via Instapay or Vodafone Cash</p>
-                                        <p class="text-sm font-semibold" x-text="'Deposit Amount: $' + depositAmount.toFixed(2)"></p>
+                                        <p class="text-sm font-semibold" x-text="'Deposit Amount: £' + depositAmount.toFixed(2)"></p>
                                     </div>
                                 </label>
                             </div>
@@ -491,8 +491,8 @@
                                         </div>
                                         <div class="pt-3 border-t border-emerald-200">
                                             <p class="text-xs text-emerald-700 mb-1">Amount to Pay:</p>
-                                            <p class="text-xl font-bold text-emerald-900" x-text="'$' + depositAmount.toFixed(2)"></p>
-                                            <p class="text-xs text-emerald-600 mt-1">Remaining balance ($<span x-text="((total - discount) - depositAmount).toFixed(2)"></span>) due at delivery</p>
+                                            <p class="text-xl font-bold text-emerald-900" x-text="'£' + depositAmount.toFixed(2)"></p>
+                                            <p class="text-xs text-emerald-600 mt-1">Remaining balance (£<span x-text="((total - discount) - depositAmount).toFixed(2)"></span>) due at delivery</p>
                                         </div>
                                     </div>
                                 </div>
@@ -535,7 +535,7 @@
                                     <div class="flex-1">
                                         <h4 class="text-sm font-bold text-slate-900 mb-1" x-text="item.name"></h4>
                                         <p class="text-xs text-slate-500 mb-2">925 Sterling Silver</p>
-                                        <p class="text-sm font-semibold text-slate-900" x-text="'$' + (item.price * item.quantity).toFixed(2)"></p>
+                                        <p class="text-sm font-semibold text-slate-900" x-text="'£' + (item.price * item.quantity).toFixed(2)"></p>
                                     </div>
                                 </div>
                             </template>
@@ -544,7 +544,7 @@
                         <div class="space-y-4 mb-8">
                             <div class="flex justify-between text-sm">
                                 <span class="text-slate-600">Subtotal</span>
-                                <span class="font-semibold" x-text="'$' + subtotal.toFixed(2)"></span>
+                                <span class="font-semibold" x-text="'£' + subtotal.toFixed(2)"></span>
                             </div>
                             <div class="flex justify-between text-sm">
                                 <span class="text-slate-600">Shipping</span>
@@ -552,17 +552,17 @@
                             </div>
                             <div class="flex justify-between text-sm">
                                 <span class="text-slate-600">Tax</span>
-                                <span class="font-semibold" x-text="'$' + tax.toFixed(2)"></span>
+                                <span class="font-semibold" x-text="'£' + tax.toFixed(2)"></span>
                             </div>
                             <template x-if="discount > 0">
                                 <div class="flex justify-between text-sm bg-emerald-50 p-2 rounded">
                                     <span class="text-emerald-700 font-semibold">Discount</span>
-                                    <span class="font-bold text-emerald-600" x-text="'-$' + discount.toFixed(2)"></span>
+                                    <span class="font-bold text-emerald-600" x-text="'-£' + discount.toFixed(2)"></span>
                                 </div>
                             </template>
                             <div class="pt-4 border-t border-slate-200 flex justify-between">
                                 <span class="font-bold text-slate-900">Total</span>
-                                <span class="serif text-2xl font-bold text-slate-900" x-text="'$' + (total - discount).toFixed(2)"></span>
+                                <span class="serif text-2xl font-bold text-slate-900" x-text="'£' + (total - discount).toFixed(2)"></span>
                             </div>
                         </div>
 
