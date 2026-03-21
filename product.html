@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details | Silver Bijoux</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+        body { font-family: 'Inter', sans-serif; background-color: #ffffff; color: #111111; overflow-x: hidden; }
+        .serif { font-family: 'Playfair Display', serif; }
+        [x-cloak] { display: none !important; }
+        html { scroll-behavior: smooth; }
+        
+        /* Custom minimalist scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f9f9f9; }
+        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+    </style>
+</head>
+<body x-data="{ 
+    cartOpen: false,
+    mobileMenuOpen: false,
+    cartItems: [],
+    product: null,
+    selectedSize: '',
+    loading: true,
+    async initPage() {
+        const savedCart = localStorage.getItem('cart');
+        if (savedCart) {
+            this.cartItems = JSON.parse(savedCart);
+        }
+        this.$watch('cartItems', (value) => {
+            localStorage.setItem('cart', JSON.stringify(value));
+        }, { deep: true });
+
+        // Wait for Firebase
+        let attempts = 0;
+        while(!window.FirebaseDB && attempts < 20) {
+            await new Promise(r => setTimeout(r, 100));
+            attempts++;
+        }
+        if(window.FirebaseDB) {
+            const fetchedProducts = await window.FirebaseDB.getData('products');
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = urlParams.get('id');
+            if (id && fetchedProducts) {
+                const found = fetchedProducts.find(p => String(p.id) === String(id));
+                if (found) {
+                    this.product = found;
+                    if (this.product.sizes && this.product.sizes.length > 0) {
+                        this.selectedSize = this.product.sizes[0];
+                    }
+                }
+            }
+        }
+        this.loading = false;
+    },
+    addThisProduct() {
+        if (!this.product) return;
+        let pId = this.product.id + '-' + this.selectedSize.replace(/\s+/g, '-');
+        let productToAdd = { 
+            id: pId, 
+            name: this.product.name + (this.selectedSize ? ' (' + this.selectedSize + ')' : ''), 
+            price: Number(this.product.price), 
+            image: this.product.image 
+        };
+        
+        let existing = this.cartItems.find(i => i.id === productToAdd.id);
+        if(existing) {
+            existing.quantity++;
+        } else {
+            this.cartItems.push({...productToAdd, quantity: 1});
+        }
+        this.cartOpen = true;
+    }
+}" x-init="initPage()">
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-40 bg-white/90 backdrop-blur-md border-b border-gray-100 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-6 lg:px-12 flex justify-between items-center h-20">
+            <!-- Left Side (Mobile Menu & Desktop Left Links) -->
+            <div class="flex flex-1 items-center space-x-6 xl:space-x-8 text-[11px] uppercase tracking-[0.2em] font-medium text-gray-500">
+                <button @click="mobileMenuOpen = !mobileMenuOpen" class="lg:hidden text-black z-50 hover:text-gray-500 transition-colors">
+                    <svg x-show="!mobileMenuOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                    <svg x-show="mobileMenuOpen" x-cloak class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+                <div class="hidden lg:flex space-x-6 xl:space-x-8">
+                    <a href="index.html#featured" class="hover:text-black transition-colors">Collection</a>
+                    <a href="index.html#bestsellers" class="hover:text-black transition-colors">Best Seller</a>
+                </div>
+            </div>
+
+            <!-- Center Logo -->
+            <div class="flex justify-center flex-shrink-0 mx-4">
+                <a href="index.html" class="text-2xl lg:text-3xl font-bold tracking-[0.1em] uppercase serif text-black text-center" style="letter-spacing: 2px;">
+                    Silver Bijoux
+                </a>
+            </div>
+
+            <!-- Right Side (Desktop Right Links & Cart) -->
+            <div class="flex flex-1 justify-end items-center space-x-6 xl:space-x-8 text-[11px] uppercase tracking-[0.2em] font-medium text-gray-500">
+                <div class="hidden lg:flex space-x-6 xl:space-x-8">
+                    <a href="index.html#featured" class="hover:text-black transition-colors">For You</a>
+                    <a href="index.html#featured" class="hover:text-black transition-colors">New Collection</a>
+                </div>
+                <button @click="cartOpen = true" class="relative group flex items-center text-black">
+                    <span class="hidden lg:block text-[11px] uppercase tracking-[0.2em] font-medium transition-colors hover:text-gray-500">Bag (<span x-text="cartItems.length"></span>)</span>
+                    <svg class="w-6 h-6 lg:hidden hover:text-gray-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                    <span x-show="cartItems.length > 0" x-cloak class="lg:hidden absolute -top-1 -right-1 bg-black text-white text-[9px] w-4 h-4 flex items-center justify-center rounded-full" x-text="cartItems.length"></span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu Overlay -->
+        <div x-show="mobileMenuOpen" x-transition x-cloak class="lg:hidden absolute w-full left-0 top-20 bg-white border-b border-gray-100 shadow-xl z-30">
+            <div class="px-6 py-8 flex flex-col space-y-6 text-xs uppercase tracking-[0.3em] font-semibold text-gray-900 text-center">
+                <a href="index.html#featured" @click="mobileMenuOpen = false" class="py-2">New Collection</a>
+                <a href="index.html#featured" @click="mobileMenuOpen = false" class="py-2">Collection</a>
+                <a href="index.html#bestsellers" @click="mobileMenuOpen = false" class="py-2">Bestsellers</a>
+                <a href="index.html#featured" @click="mobileMenuOpen = false" class="py-2">For You</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Product Section -->
+    <main x-show="product && !loading" x-cloak class="pt-32 pb-24 px-6 lg:px-12 max-w-7xl mx-auto min-h-[80vh] flex flex-col lg:flex-row gap-16">
+        <!-- Image Gallery -->
+        <div class="lg:w-1/2">
+            <div class="aspect-[4/5] bg-gray-50 mb-4 overflow-hidden border border-gray-100">
+                <img :src="product ? product.image : ''" class="w-full h-full object-cover">
+            </div>
+        </div>
+        
+        <!-- Product Info -->
+        <div class="lg:w-1/2 flex flex-col justify-center">
+            <p class="text-[10px] uppercase tracking-[0.3em] text-gray-400 font-bold mb-4">Silver Bijoux Exclusive</p>
+            <h1 class="serif text-4xl md:text-5xl italic text-black mb-6" x-text="product ? product.name : ''"></h1>
+            <p class="text-2xl tracking-[0.2em] text-gray-900 mb-8 font-light">£<span x-text="product ? Number(product.price).toFixed(2) : ''"></span></p>
+            
+            <p class="text-gray-500 text-sm leading-relaxed mb-10 text-justify" x-text="product ? product.description : ''"></p>
+            
+            <div class="mb-10 w-full lg:w-2/3" x-show="product && product.sizes && product.sizes.length > 0">
+                <div class="flex justify-between items-center mb-4">
+                    <label class="block text-[10px] uppercase tracking-[0.3em] font-bold text-gray-900">Select Size</label>
+                    <a href="#" class="text-[10px] uppercase tracking-[0.2em] text-gray-400 underline">Size Guide</a>
+                </div>
+                <div class="relative">
+                    <select x-model="selectedSize" class="w-full border border-gray-300 rounded-none px-4 py-4 text-sm font-medium focus:outline-none focus:border-black appearance-none bg-white cursor-pointer relative z-10 transition-colors">
+                        <template x-if="product && product.sizes">
+                            <template x-for="size in product.sizes" :key="size">
+                                <option :value="size" x-text="size"></option>
+                            </template>
+                        </template>
+                    </select>
+                    <div class="absolute inset-y-0 right-4 flex items-center pointer-events-none z-0">
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                </div>
+            </div>
+            
+            <button @click="addThisProduct()" class="w-full lg:w-2/3 bg-black text-white py-5 text-[10px] uppercase tracking-[0.3em] font-bold hover:bg-gray-800 transition-colors mb-10 shadow-lg mt-2">Add to Bag</button>
+            
+            <div class="border-t border-gray-200 pt-8 space-y-4 lg:w-2/3">
+                <div class="flex items-center gap-4 text-xs text-gray-500 uppercase tracking-widest">
+                    <span class="text-black text-sm">✦</span> Cash on Delivery Available
+                </div>
+                <div class="flex items-center gap-4 text-xs text-gray-500 uppercase tracking-widest">
+                    <span class="text-black text-sm">✦</span> 925 Sterling Silver Authenticity
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Product Not Found -->
+    <div x-show="!product && !loading" x-cloak class="pt-40 pb-32 text-center min-h-[70vh] flex flex-col justify-center items-center">
+        <h2 class="serif text-4xl italic mb-6">Product not found.</h2>
+        <p class="text-sm text-gray-500 tracking-widest uppercase mb-8">The piece you are looking for is currently unavailable.</p>
+        <a href="index.html" class="inline-block border border-black px-10 py-4 text-[10px] uppercase font-bold tracking-[0.3em] hover:bg-black hover:text-white transition-colors">Return to Collection</a>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-black text-white py-20 px-6 lg:px-12">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-16 border-b border-gray-800 pb-20">
+            <div class="md:col-span-5">
+                <a href="index.html" class="text-2xl font-bold tracking-[0.1em] uppercase serif mb-8 inline-block text-white" style="letter-spacing: 2px;">Silver Bijoux</a>
+                <p class="text-xs text-gray-400 leading-relaxed max-w-sm">An independent luxury silver jewelry brand, proudly based in Egypt. Dedicated to exceptional quality and timeless design.</p>
+            </div>
+            
+            <div class="md:col-span-2">
+                <h4 class="text-[10px] uppercase tracking-[0.2em] font-bold text-white mb-8">Explore</h4>
+                <ul class="space-y-6 text-xs text-gray-400">
+                    <li><a href="index.html#featured" class="hover:text-white transition-colors">Featured Collection</a></li>
+                    <li><a href="index.html#bestsellers" class="hover:text-white transition-colors">Bestsellers</a></li>
+                    <li><a href="index.html#about" class="hover:text-white transition-colors">Our Story</a></li>
+                </ul>
+            </div>
+            
+            <div class="md:col-span-3">
+                <h4 class="text-[10px] uppercase tracking-[0.2em] font-bold text-white mb-8">Customer Care</h4>
+                <ul class="space-y-6 text-xs text-gray-400">
+                    <li><a href="#" class="hover:text-white transition-colors">Delivery Information</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Returns & Honesty</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Jewelry Care Guide</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Contact Us</a></li>
+                </ul>
+            </div>
+            
+            <div class="md:col-span-2">
+                <h4 class="text-[10px] uppercase tracking-[0.2em] font-bold text-white mb-8">Connect</h4>
+                <ul class="space-y-6 text-xs text-gray-400">
+                    <li><a href="#" class="hover:text-white transition-colors">Instagram</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Facebook</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">TikTok</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="max-w-7xl mx-auto pt-10 flex flex-col md:flex-row justify-between items-center text-[9px] uppercase tracking-[0.2em] text-gray-600">
+            <p>&copy; 2026 Silver Bijoux Egypt. All Rights Reserved.</p>
+            <div class="space-x-8 mt-6 md:mt-0 flex">
+                <a href="#" class="hover:text-gray-300 transition-colors">Privacy Policy</a>
+                <a href="#" class="hover:text-gray-300 transition-colors">Terms of Service</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Cart Drawer -->
+    <div x-show="cartOpen" x-cloak class="fixed inset-0 z-[100]" role="dialog" aria-modal="true" aria-labelledby="cart-title">
+        <div @click="cartOpen = false" class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"></div>
+        <div class="absolute inset-y-0 right-0 max-w-sm lg:max-w-md w-full bg-white shadow-2xl transform transition-transform duration-500 ease-in-out" x-transition:enter="translate-x-full" x-transition:leave="translate-x-full">
+            <div class="h-full flex flex-col">
+                <div class="bg-white border-b border-gray-100 p-8 text-black flex justify-between items-center">
+                    <h3 id="cart-title" class="font-bold uppercase tracking-[0.2em] text-[10px]">Your Shopping Bag</h3>
+                    <button @click="cartOpen = false" class="text-2xl font-light hover:text-gray-500 transition-colors">×</button>
+                </div>
+                
+                <div class="flex-1 overflow-y-auto p-8">
+                    <!-- Cart Items -->
+                    <div x-show="cartItems.length > 0" class="space-y-8">
+                        <template x-for="(item, index) in cartItems" :key="index">
+                            <div class="flex gap-6 border-b border-gray-100 pb-8 group relative">
+                                <img :src="item.image" class="w-24 h-28 object-cover bg-gray-50">
+                                <div class="flex-1 flex flex-col justify-between">
+                                    <div>
+                                        <p class="serif italic text-base text-black mb-1" x-text="item.name"></p>
+                                        <p class="text-[10px] uppercase tracking-[0.2em] text-gray-500">Qty: <span x-text="item.quantity"></span> × £<span x-text="item.price.toFixed(2)"></span></p>
+                                    </div>
+                                    <div class="flex justify-between items-end">
+                                        <button @click="cartItems.splice(index, 1)" class="text-[9px] uppercase tracking-[0.3em] font-bold text-gray-400 hover:text-black transition-colors border-b border-transparent hover:border-black pb-1">Remove</button>
+                                        <p class="text-sm tracking-[0.2em] text-black font-semibold">£<span x-text="(item.price * item.quantity).toFixed(2)"></span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                    
+                    <!-- Empty Cart -->
+                    <div x-show="cartItems.length === 0" class="h-full flex flex-col items-center justify-center py-20">
+                        <p class="text-[10px] uppercase tracking-[0.3em] text-gray-400 font-bold mb-8">Your bag is elegantly empty.</p>
+                        <button @click="cartOpen = false" class="border border-black px-10 py-4 text-[10px] uppercase tracking-[0.2em] font-bold hover:bg-black hover:text-white transition-colors">Continue Shopping</button>
+                    </div>
+                </div>
+
+                <div x-show="cartItems.length > 0" class="border-t border-gray-200 p-8 bg-[#fafafa]">
+                    <div class="flex justify-between items-center pb-6 mb-6 border-b border-gray-200">
+                        <span class="text-[10px] uppercase tracking-[0.3em] font-bold text-gray-900">Subtotal</span>
+                        <span class="text-lg tracking-[0.2em] text-black font-semibold">£<span x-text="cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0).toFixed(2)"></span></span>
+                    </div>
+                    <p class="text-[10px] text-gray-500 uppercase tracking-[0.2em] text-center mb-8 font-semibold">Shipping & taxes calculated at checkout</p>
+                    <a href="checkout.html" class="block w-full bg-black text-center text-white py-6 text-[10px] uppercase tracking-[0.3em] font-bold hover:bg-gray-800 transition-colors shadow-xl">Secure Checkout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="firebase.js"></script>
+</body>
+</html>

@@ -167,8 +167,8 @@
         }
     },
     formData: { firstName: '', lastName: '', email: '', address: '', city: '', state: '', zip: '', phone: '', cardName: '', cardNumber: '', expiry: '', cvv: '' },
-    paymentMethod: 'deposit',
-    paymentGateway: 'instapay',
+    notes: '',
+    paymentMethod: 'cod',
     depositPhone: '01023298989',
     promoCode: '',
     appliedPromo: null,
@@ -305,15 +305,15 @@
             discount: this.discount,
             appliedPromo: this.appliedPromo ? this.appliedPromo.code : null,
             total: this.total - this.discount,
-            paymentMethod: 'deposit',
-            paymentGateway: this.paymentGateway,
-            depositAmount: this.depositAmount,
-            remainingBalance: (this.total - this.discount) - this.depositAmount,
+            paymentMethod: this.paymentMethod,
+            paymentGateway: this.paymentMethod,
+            depositAmount: this.paymentMethod === 'instapay' ? (this.total - this.discount) : 0,
+            remainingBalance: this.paymentMethod === 'cod' ? (this.total - this.discount) : 0,
             status: 'pending',
             depositPhone: this.depositPhone,
             createdAt: new Date().toISOString(),
             confirmedAt: null,
-            notes: ''
+            notes: this.notes
         };
 
         // Save order to Firebase
@@ -452,57 +452,41 @@
                         </div>
 
                         <form class="space-y-8" @submit.prevent>
+                            <!-- Order Notes -->
+                            <div>
+                                <label class="block text-xs uppercase tracking-widest font-semibold mb-3" style="color: var(--text-secondary);">Order Notes (Optional)</label>
+                                <textarea x-model="notes" rows="3" placeholder="Any special instructions or delivery notes?" style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; background: transparent; color: #1e293b !important; -webkit-text-fill-color: #1e293b !important; font-size: 14px; font-weight: 400; line-height: 1.5; pointer-events: auto; cursor: text; z-index: 1000; position: relative; font-family: 'Inter', sans-serif; resize: vertical;"></textarea>
+                            </div>
+
                             <!-- Payment Method Selection -->
-                            <div class="space-y-4">
-                                <!-- Option 1: Deposit Payment -->
-                                <label class="flex items-start gap-4 p-6 border-2 rounded-lg cursor-pointer transition" :class="paymentMethod === 'deposit' ? 'border-blue-500 bg-blue-50' : 'border-slate-200 bg-white hover:border-slate-300'">
-                                    <input type="radio" x-model="paymentMethod" value="deposit" class="mt-1 w-4 h-4 cursor-pointer">
+                            <div class="space-y-4 pt-4">
+                                <!-- Option 1: Cash on Delivery -->
+                                <label class="flex items-start gap-4 p-6 border-2 rounded-lg cursor-pointer transition border-slate-200 bg-white hover:border-slate-300" :class="paymentMethod === 'cod' ? '!border-blue-500 !bg-blue-50' : ''">
+                                    <input type="radio" x-model="paymentMethod" value="cod" class="mt-1 w-4 h-4 cursor-pointer">
                                     <div class="flex-1">
-                                        <h3 class="font-bold mb-1">💳 Deposit Payment (30%)</h3>
-                                        <p class="text-sm text-slate-600 mb-2">Pay 30% deposit now via Instapay or Vodafone Cash</p>
-                                        <p class="text-sm font-semibold" x-text="'Deposit Amount: £' + depositAmount.toFixed(2)"></p>
+                                        <h3 class="font-bold mb-1" style="color: var(--text-primary);">💵 Cash on Delivery (COD)</h3>
+                                        <p class="text-sm" style="color: var(--text-secondary);">Pay in cash directly to the courier when your order arrives</p>
+                                    </div>
+                                </label>
+
+                                <!-- Option 2: Instapay -->
+                                <label class="flex items-start gap-4 p-6 border-2 rounded-lg cursor-pointer transition border-slate-200 bg-white hover:border-slate-300" :class="paymentMethod === 'instapay' ? '!border-blue-500 !bg-blue-50' : ''">
+                                    <input type="radio" x-model="paymentMethod" value="instapay" class="mt-1 w-4 h-4 cursor-pointer">
+                                    <div class="flex-1">
+                                        <h3 class="font-bold mb-1" style="color: var(--text-primary);">📱 Instapay</h3>
+                                        <p class="text-sm" style="color: var(--text-secondary);">Transfer the total amount via Instapay</p>
                                     </div>
                                 </label>
                             </div>
 
-                            <!-- Deposit Payment Details -->
-                            <div x-show="paymentMethod === 'deposit'" x-transition class="space-y-6 bg-blue-50 border border-blue-200 rounded-lg p-6">
+                            <!-- Instapay Instructions -->
+                            <div x-show="paymentMethod === 'instapay'" x-transition class="bg-blue-50 border border-blue-200 rounded-lg p-6 flex gap-4 items-start">
+                                <svg class="w-6 h-6 text-blue-600 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                 <div>
-                                    <label class="block text-xs uppercase tracking-widest font-semibold mb-3" style="color: var(--text-secondary);">Payment Gateway * <span class="text-red-500">required</span></label>
-                                    <div class="grid grid-cols-2 gap-4">
-                                        <label class="flex items-center gap-2 p-3 border-2 rounded cursor-pointer transition" :class="paymentGateway === 'instapay' ? 'border-blue-500 bg-white' : 'border-slate-200 hover:border-slate-300'">
-                                            <input type="radio" x-model="paymentGateway" value="instapay" class="cursor-pointer">
-                                            <span class="font-semibold">Instapay</span>
-                                        </label>
-                                        <label class="flex items-center gap-2 p-3 border-2 rounded cursor-pointer transition" :class="paymentGateway === 'vodafone' ? 'border-blue-500 bg-white' : 'border-slate-200 hover:border-slate-300'">
-                                            <input type="radio" x-model="paymentGateway" value="vodafone" class="cursor-pointer">
-                                            <span class="font-semibold">Vodafone Cash</span>
-                                        </label>
-                                    </div>
+                                    <p class="text-sm text-blue-900 font-semibold mb-2">Instapay Payment Instructions:</p>
+                                    <p class="text-sm text-blue-800">Please send the payment to <span class="font-bold tracking-wider underline">01023298989</span>.</p>
+                                    <p class="text-sm text-blue-800 mt-2 font-semibold">Important: You must send a screenshot of the transaction to the exact same number via WhatsApp to confirm your order.</p>
                                 </div>
-
-
-
-                                <div class="bg-emerald-50 rounded border-2 border-emerald-300 p-6">
-                                    <p class="text-sm font-semibold mb-4 text-emerald-900">💰 Send Deposit To:</p>
-                                    <div class="space-y-3">
-                                        <div>
-                                            <p class="text-xs text-emerald-700 mb-1">Phone Number:</p>
-                                            <p class="text-2xl font-bold text-emerald-900 tracking-wider" x-text="depositPhone"></p>
-                                        </div>
-                                        <div class="pt-3 border-t border-emerald-200">
-                                            <p class="text-xs text-emerald-700 mb-1">Amount to Pay:</p>
-                                            <p class="text-xl font-bold text-emerald-900" x-text="'£' + depositAmount.toFixed(2)"></p>
-                                            <p class="text-xs text-emerald-600 mt-1">Remaining balance (£<span x-text="((total - discount) - depositAmount).toFixed(2)"></span>) due at delivery</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Info Box -->
-                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 flex gap-3">
-                                <svg class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                <p class="text-sm text-blue-800">Send a screenshot of your transaction to <span class="font-bold">01023298989</span> via WhatsApp or any messaging app to confirm your deposit payment.</p>
                             </div>
 
                             <div class="flex gap-3 mt-12">

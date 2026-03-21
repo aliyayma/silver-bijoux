@@ -2,13 +2,13 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/fireba
 import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCxq3ajPVT3QTzn5gxhx0pfBvN_UYI7SWA",
-  authDomain: "silver-bijoux.firebaseapp.com",
-  projectId: "silver-bijoux",
-  storageBucket: "silver-bijoux.firebasestorage.app",
-  messagingSenderId: "386142556876",
-  appId: "1:386142556876:web:c717c8c5d04fa49cfda869",
-  measurementId: "G-C9PBCMRN1L"
+  apiKey: "AIzaSyCo7gd-BGOoAMGxZKk-18JzB0gkMBVi4uY",
+  authDomain: "silverbijoux-ebdd5.firebaseapp.com",
+  projectId: "silverbijoux-ebdd5",
+  storageBucket: "silverbijoux-ebdd5.firebasestorage.app",
+  messagingSenderId: "480803054908",
+  appId: "1:480803054908:web:2e19c0512d07091bd02a39",
+  measurementId: "G-D2LKYQ3MN0"
 };
 
 // Initialize Firebase
