@@ -1205,12 +1205,17 @@
                 adminPassword: '29281625Ali',
 
                 init() {
-                    document.addEventListener('firebase-ready', async () => {
+                    const loadData = async () => {
                         await this.loadOrders();
                         await this.loadProducts();
                         await this.loadPromoCodes();
                         await this.loadFAQs();
-                    });
+                    };
+                    if (window.FirebaseDB) {
+                        loadData();
+                    } else {
+                        document.addEventListener('firebase-ready', loadData);
+                    }
                     // Check if already logged in
                     if (localStorage.getItem('adminLoggedIn') === 'true') {
                         this.isLoggedIn = true;
