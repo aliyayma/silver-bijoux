@@ -577,10 +577,22 @@
                                 <template x-for="product in products" :key="product.id">
                                     <tr class="border-b border-slate-200 hover:bg-slate-50 transition">
                                         <td class="px-6 py-4 font-semibold text-slate-900">
-                                            <div x-text="product.name"></div>
-                                            <div class="flex gap-1 mt-1" x-show="product.tag">
-                                                <span class="text-[10px] bg-black text-white px-2 py-0.5 rounded uppercase tracking-wider" x-text="product.tag"></span>
-                                            </div>
+                                            <input 
+                                                type="text" 
+                                                x-model="product.name"
+                                                class="w-full px-2 py-1 mb-2 border border-transparent hover:border-slate-300 focus:border-slate-300 rounded focus:outline-none focus:ring-2 focus:ring-slate-900 bg-transparent focus:bg-white"
+                                            >
+                                            <select 
+                                                x-model="product.tag"
+                                                class="w-full text-xs px-2 py-1 border border-transparent hover:border-slate-300 focus:border-slate-300 rounded focus:outline-none bg-transparent focus:bg-white cursor-pointer"
+                                            >
+                                                <option value="">No Tag</option>
+                                                <option value="New Collection">New Collection</option>
+                                                <option value="Best Seller">Best Seller</option>
+                                                <option value="Trending">Trending</option>
+                                                <option value="Limited Stock">Limited Stock</option>
+                                                <option value="For You">For You</option>
+                                            </select>
                                         </td>
                                         <td class="px-6 py-4 text-slate-600">
                                             <span class="inline-block bg-slate-100 px-3 py-1 rounded-full text-xs font-semibold" x-text="product.category"></span>
