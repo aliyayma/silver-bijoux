@@ -6,6 +6,7 @@
     <title>Checkout | Silver Bijoux</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script type="module" src="firebase.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
@@ -235,7 +236,7 @@
     validateCVV(cvv) {
         return /^\d{3,4}$/.test(cvv.replace(/\s/g, ''));
     },
-    applyPromoCode() {
+    async applyPromoCode() {
         this.promoError = '';
         this.promoSuccess = '';
         this.discount = 0;
@@ -246,8 +247,8 @@
             return;
         }
 
-        // Load promo codes from localStorage
-        const promoCodes = JSON.parse(localStorage.getItem('promoCodes') || '[]');
+        // Load promo codes from Firebase
+        const promoCodes = await window.FirebaseDB.getData('promoCodes') || [];
         const promo = promoCodes.find(p => p.code === this.promoCode.toUpperCase());
 
         if (!promo) {
@@ -287,7 +288,7 @@
         this.appliedPromo = promo;
         this.promoSuccess = `${promo.description} - You saved £${this.discount.toFixed(2)}!`;
     },
-    validatePayment() {
+    async validatePayment() {
         // Create complete order object
         const order = {
             id: 'ORD-' + Date.now(),
@@ -315,10 +316,10 @@
             notes: ''
         };
 
-        // Save order to localStorage
-        let orders = JSON.parse(localStorage.getItem('orders') || '[]');
+        // Save order to Firebase
+        let orders = await window.FirebaseDB.getData('orders') || [];
         orders.push(order);
-        localStorage.setItem('orders', JSON.stringify(orders));
+        await window.FirebaseDB.saveData('orders', JSON.parse(JSON.stringify(orders)));
 
         // Save individual fields for backward compatibility
         this.formData.firstName && localStorage.setItem('clientName', this.formData.firstName);
