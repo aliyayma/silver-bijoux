@@ -1498,8 +1498,18 @@
                 // PRODUCT MANAGEMENT METHODS
                 async loadProducts() {
                     const data = await window.FirebaseDB.getData('products');
-                    if (data) {
+                    if (data && data.length > 0) {
+                        let changed = false;
+                        const seenIds = new Set();
+                        data.forEach(p => {
+                            if (!p.id || String(p.id).includes('NaN') || seenIds.has(p.id)) {
+                                p.id = 'PROD-' + Date.now() + '-' + Math.floor(Math.random() * 10000);
+                                changed = true;
+                            }
+                            seenIds.add(p.id);
+                        });
                         this.products = data;
+                        if (changed) this.saveProducts();
                     } else {
                         // Initialize with default products
                         this.products = [
@@ -1525,9 +1535,9 @@
                         return;
                     }
 
-                    const newId = Math.max(...this.products.map(p => p.id), 0) + 1;
+                    const newId = 'PROD-' + Date.now() + '-' + Math.floor(Math.random() * 10000);
                     this.products.push({
-                        id: String(newId),
+                        id: newId,
                         name: this.newProduct.name,
                         price: parseFloat(this.newProduct.price),
                         category: this.newProduct.category,
