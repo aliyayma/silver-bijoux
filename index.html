@@ -64,9 +64,13 @@
             }
         }
     },
+    tags: ['New Collection', 'Best Seller', 'For You', 'Trending', 'Limited Stock'],
     get filteredCollection() {
         if (this.activeCategory === 'All') return this.products;
-        return this.products.filter(p => p.tag === this.activeCategory);
+        if (this.tags.includes(this.activeCategory)) {
+            return this.products.filter(p => p.tag === this.activeCategory);
+        }
+        return this.products.filter(p => p.category === this.activeCategory);
     },
     get bestsellers() {
         return this.products.filter(p => p.tag === 'Best Seller');
@@ -182,8 +186,17 @@
     <!-- 3. FEATURED PRODUCTS (WITH SIDEBAR) -->
     <section id="featured" class="py-24 px-6 lg:px-12 max-w-7xl mx-auto border-t border-gray-100">
         <div class="text-center mb-16 lg:mb-20">
-            <h2 class="text-[10px] uppercase tracking-[0.3em] text-gray-400 font-bold mb-4" x-text="activeCategory === 'All' ? 'The Collection' : activeCategory"></h2>
-            <h3 class="serif text-4xl italic text-black" x-text="activeCategory === 'All' ? 'Curated Elegance' : 'Discover Your Style'"></h3>
+            <h2 class="text-[10px] uppercase tracking-[0.3em] text-gray-400 font-bold mb-4" x-text="tags.includes(activeCategory) ? activeCategory : 'The Collection'"></h2>
+            <h3 class="serif text-4xl italic text-black" x-text="activeCategory === 'All' ? 'Curated Elegance' : (tags.includes(activeCategory) ? 'Discover Your Style' : activeCategory)"></h3>
+            
+            <!-- Category Filters -->
+            <div class="flex flex-wrap justify-center gap-6 mt-10">
+                <button @click="activeCategory = 'All'" :class="activeCategory === 'All' ? 'text-black border-black border-b' : 'text-gray-400 border-transparent hover:text-black'" class="text-[10px] uppercase tracking-[0.2em] font-bold pb-1 transition-colors">All</button>
+                <button @click="activeCategory = 'Rings'" :class="activeCategory === 'Rings' ? 'text-black border-black border-b' : 'text-gray-400 border-transparent hover:text-black'" class="text-[10px] uppercase tracking-[0.2em] font-bold pb-1 transition-colors">Rings</button>
+                <button @click="activeCategory = 'Necklaces'" :class="activeCategory === 'Necklaces' ? 'text-black border-black border-b' : 'text-gray-400 border-transparent hover:text-black'" class="text-[10px] uppercase tracking-[0.2em] font-bold pb-1 transition-colors">Necklaces</button>
+                <button @click="activeCategory = 'Bracelets'" :class="activeCategory === 'Bracelets' ? 'text-black border-black border-b' : 'text-gray-400 border-transparent hover:text-black'" class="text-[10px] uppercase tracking-[0.2em] font-bold pb-1 transition-colors">Bracelets</button>
+                <button @click="activeCategory = 'Earrings'" :class="activeCategory === 'Earrings' ? 'text-black border-black border-b' : 'text-gray-400 border-transparent hover:text-black'" class="text-[10px] uppercase tracking-[0.2em] font-bold pb-1 transition-colors">Earrings</button>
+            </div>
         </div>
         
         <div class="flex flex-col lg:flex-row gap-12 max-w-6xl mx-auto">
