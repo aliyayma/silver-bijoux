@@ -142,12 +142,14 @@
     <!-- 1. HERO SECTION -->
     <header class="relative h-screen flex items-center justify-center">
         <div class="absolute inset-0 w-full h-full text-black bg-black">
-            <template x-if="homepageMedia.heroMediaType === 'image'">
-                <img :src="homepageMedia.heroMediaUrl" class="w-full h-full object-cover opacity-80" alt="Luxury Silver Jewelry">
-            </template>
-            <template x-if="homepageMedia.heroMediaType === 'video'">
-                <video :src="homepageMedia.heroMediaUrl" autoplay loop muted playsinline class="w-full h-full object-cover opacity-80"></video>
-            </template>
+            <img x-show="homepageMedia.heroMediaType === 'image'" :src="homepageMedia.heroMediaUrl" class="w-full h-full object-cover opacity-80" alt="Luxury Silver Jewelry">
+            
+            <video x-show="homepageMedia.heroMediaType === 'video'" 
+                   :src="homepageMedia.heroMediaUrl" 
+                   x-init="$watch('homepageMedia.heroMediaUrl', value => { if(value) { $el.load(); $el.play().catch(e => {}) } })"
+                   @loadeddata="$el.play().catch(e => {})"
+                   autoplay loop muted playsinline 
+                   class="w-full h-full object-cover opacity-80"></video>
         </div>
         <div class="relative z-10 text-center px-6 max-w-4xl mx-auto text-white mt-10">
             <h1 class="serif text-5xl md:text-7xl lg:text-8xl mb-6 font-light italic leading-tight tracking-[0.02em]">Timeless Elegance.<br>Crafted in Silver.</h1>
@@ -255,12 +257,14 @@
         <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-20">
             <div class="lg:w-1/2 w-full">
                 <div class="relative">
-                    <template x-if="homepageMedia.whyUsMediaType === 'image'">
-                        <img :src="homepageMedia.whyUsMediaUrl" class="w-full aspect-[4/5] object-cover shadow-2xl" alt="Silver Jewelry Craftsmanship">
-                    </template>
-                    <template x-if="homepageMedia.whyUsMediaType === 'video'">
-                        <video :src="homepageMedia.whyUsMediaUrl" autoplay loop muted playsinline class="w-full aspect-[4/5] object-cover shadow-2xl"></video>
-                    </template>
+                    <img x-show="homepageMedia.whyUsMediaType === 'image'" :src="homepageMedia.whyUsMediaUrl" class="w-full aspect-[4/5] object-cover shadow-2xl" alt="Silver Jewelry Craftsmanship">
+                    
+                    <video x-show="homepageMedia.whyUsMediaType === 'video'" 
+                           :src="homepageMedia.whyUsMediaUrl" 
+                           x-init="$watch('homepageMedia.whyUsMediaUrl', value => { if(value) { $el.load(); $el.play().catch(e => {}) } })"
+                           @loadeddata="$el.play().catch(e => {})"
+                           autoplay loop muted playsinline 
+                           class="w-full aspect-[4/5] object-cover shadow-2xl"></video>
                     <div class="absolute -right-4 -bottom-4 w-full h-full border border-black/10 -z-10"></div>
                 </div>
             </div>
