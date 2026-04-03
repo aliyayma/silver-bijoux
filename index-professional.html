@@ -158,7 +158,7 @@
                 <div class="group product-card">
                     <div class="aspect-[4/5] bg-slate-100 mb-6 overflow-hidden relative rounded-sm">
                         <img :src="product.image || 'https://images.unsplash.com/photo-1635767798638-3e25273a8236?auto=format&fit=crop&q=80&w=800'" class="w-full h-full object-cover group-hover:scale-105 transition duration-700" :alt="product.name" loading="lazy">
-                        <button @click="addToCart(product)" class="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur py-3 px-4 text-[9px] uppercase font-bold tracking-widest opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0 rounded-sm hover:bg-white" :aria-label="'Add ' + product.name + ' to cart'">Add to Cart</button>
+                        <button @click="(product.category === 'Handmade' || (product.sizes && product.sizes.length > 0)) ? window.location.href='product.html?id=' + product.id : addToCart(product)" class="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur py-3 px-4 text-[9px] uppercase font-bold tracking-widest opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0 rounded-sm hover:bg-white" :aria-label="'Add ' + product.name + ' to cart'" x-text="(product.category === 'Handmade' || (product.sizes && product.sizes.length > 0)) ? 'Select Options' : 'Add to Cart'"></button>
                     </div>
                     <div class="space-y-2">
                         <h3 class="serif text-lg italic text-slate-900 group-hover:text-slate-700 transition-colors font-light" x-text="product.name"></h3>

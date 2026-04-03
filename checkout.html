@@ -534,7 +534,7 @@
                                     <div class="flex-1">
                                         <h4 class="text-sm font-bold text-slate-900 mb-1" x-text="item.name"></h4>
                                         <p class="text-xs text-slate-500 mb-2">925 Sterling Silver</p>
-                                        <p class="text-sm font-semibold text-slate-900" x-text="'£' + (item.price * item.quantity).toFixed(2)"></p>
+                                        <p class="text-sm font-semibold text-slate-900" x-text="'£' + (Number(item.price) * item.quantity).toFixed(2)"></p>
                                     </div>
                                 </div>
                             </template>

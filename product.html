@@ -63,16 +63,26 @@
     },
     addThisProduct() {
         if (!this.product) return;
-        if (this.recipientName.trim() === '') {
+        let isHandmade = this.product.category === 'Handmade';
+        
+        if (isHandmade && this.recipientName.trim() === '') {
             this.recipientError = true;
             return;
         }
         this.recipientError = false;
+        
         let rName = this.recipientName.trim();
-        let pId = this.product.id + '-' + (this.selectedSize ? String(this.selectedSize).replace(/\s+/g, '-') : '') + '-' + rName.replace(/\s+/g, '-');
+        let pId = String(this.product.id) + (this.selectedSize ? '-' + String(this.selectedSize).replace(/\s+/g, '-') : '');
+        let pName = this.product.name + (this.selectedSize ? ' (' + this.selectedSize + ')' : '');
+        
+        if (isHandmade && rName) {
+            pId += '-' + rName.replace(/\s+/g, '-');
+            pName += ' [For: ' + rName + ']';
+        }
+        
         let productToAdd = { 
             id: pId, 
-            name: this.product.name + (this.selectedSize ? ' (' + this.selectedSize + ')' : '') + ' [For: ' + rName + ']', 
+            name: pName, 
             price: Number(this.product.price), 
             image: this.product.image 
         };
@@ -169,7 +179,7 @@
                     </div>
                 </div>
             </div>
-            <div class="mb-6 w-full lg:w-2/3">
+            <div class="mb-6 w-full lg:w-2/3" x-show="product && product.category === 'Handmade'">
                 <div class="flex justify-between items-center mb-4">
                     <label class="block text-[10px] uppercase tracking-[0.3em] font-bold text-gray-900">Who is this for? *</label>
                 </div>
@@ -262,11 +272,11 @@
                                 <div class="flex-1 flex flex-col justify-between">
                                     <div>
                                         <p class="serif italic text-base text-black mb-1" x-text="item.name"></p>
-                                        <p class="text-[10px] uppercase tracking-[0.2em] text-gray-500">Qty: <span x-text="item.quantity"></span> × £<span x-text="item.price.toFixed(2)"></span></p>
+                                        <p class="text-[10px] uppercase tracking-[0.2em] text-gray-500">Qty: <span x-text="item.quantity"></span> × £<span x-text="Number(item.price).toFixed(2)"></span></p>
                                     </div>
                                     <div class="flex justify-between items-end">
                                         <button @click="cartItems.splice(index, 1)" class="text-[9px] uppercase tracking-[0.3em] font-bold text-gray-400 hover:text-black transition-colors border-b border-transparent hover:border-black pb-1">Remove</button>
-                                        <p class="text-sm tracking-[0.2em] text-black font-semibold">£<span x-text="(item.price * item.quantity).toFixed(2)"></span></p>
+                                        <p class="text-sm tracking-[0.2em] text-black font-semibold">£<span x-text="(Number(item.price) * item.quantity).toFixed(2)"></span></p>
                                     </div>
                                 </div>
                             </div>
@@ -283,7 +293,7 @@
                 <div x-show="cartItems.length > 0" class="border-t border-gray-200 p-8 bg-[#fafafa]">
                     <div class="flex justify-between items-center pb-6 mb-6 border-b border-gray-200">
                         <span class="text-[10px] uppercase tracking-[0.3em] font-bold text-gray-900">Subtotal</span>
-                        <span class="text-lg tracking-[0.2em] text-black font-semibold">£<span x-text="cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0).toFixed(2)"></span></span>
+                        <span class="text-lg tracking-[0.2em] text-black font-semibold">£<span x-text="cartItems.reduce((sum, item) => sum + (Number(item.price) * item.quantity), 0).toFixed(2)"></span></span>
                     </div>
                     <p class="text-[10px] text-gray-500 uppercase tracking-[0.2em] text-center mb-8 font-semibold">Shipping & taxes calculated at checkout</p>
                     <a href="checkout.html" class="block w-full bg-black text-center text-white py-6 text-[10px] uppercase tracking-[0.3em] font-bold hover:bg-gray-800 transition-colors shadow-xl">Secure Checkout</a>
