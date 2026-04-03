@@ -99,6 +99,7 @@
 
                 <!-- Desktop Left Links -->
                 <div class="hidden lg:flex space-x-6 xl:space-x-8">
+                    <a href="#featured" @click="activeCategory = 'Trending'" class="hover:text-black transition-colors">Trending</a>
                     <a href="#featured" @click="activeCategory = 'All'" class="hover:text-black transition-colors">Collection</a>
                     <a href="#bestsellers" class="hover:text-black transition-colors">Best Seller</a>
                 </div>
@@ -134,6 +135,7 @@
             <div class="px-6 py-8 flex flex-col space-y-6 text-xs uppercase tracking-[0.3em] font-semibold text-gray-900 text-center">
                 <a href="#featured" @click="activeCategory = 'New Collection'; mobileMenuOpen = false" class="py-2">New Collection</a>
                 <a href="#featured" @click="activeCategory = 'Handmade'; mobileMenuOpen = false" class="py-2">Handmade</a>
+                <a href="#featured" @click="activeCategory = 'Trending'; mobileMenuOpen = false" class="py-2">Trending</a>
                 <a href="#featured" @click="activeCategory = 'All'; mobileMenuOpen = false" class="py-2">Collection</a>
                 <a href="#bestsellers" @click="mobileMenuOpen = false" class="py-2">Bestsellers</a>
                 <a href="#featured" @click="activeCategory = 'For You'; mobileMenuOpen = false" class="py-2">For You</a>
@@ -201,6 +203,7 @@
                 <button @click="activeCategory = 'Bracelets'" :class="activeCategory === 'Bracelets' ? 'text-black border-black border-b' : 'text-gray-400 border-transparent hover:text-black'" class="text-[10px] uppercase tracking-[0.2em] font-bold pb-1 transition-colors">Bracelets</button>
                 <button @click="activeCategory = 'Earrings'" :class="activeCategory === 'Earrings' ? 'text-black border-black border-b' : 'text-gray-400 border-transparent hover:text-black'" class="text-[10px] uppercase tracking-[0.2em] font-bold pb-1 transition-colors">Earrings</button>
                 <button @click="activeCategory = 'Handmade'" :class="activeCategory === 'Handmade' ? 'text-black border-black border-b' : 'text-gray-400 border-transparent hover:text-black'" class="text-[10px] uppercase tracking-[0.2em] font-bold pb-1 transition-colors">Handmade</button>
+                <button @click="activeCategory = 'Trending'" :class="activeCategory === 'Trending' ? 'text-black border-black border-b' : 'text-gray-400 border-transparent hover:text-black'" class="text-[10px] uppercase tracking-[0.2em] font-bold pb-1 transition-colors">Trending</button>
             </div>
         </div>
         

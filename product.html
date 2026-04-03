@@ -69,7 +69,7 @@
         }
         this.recipientError = false;
         let rName = this.recipientName.trim();
-        let pId = this.product.id + '-' + this.selectedSize.replace(/\s+/g, '-') + '-' + rName.replace(/\s+/g, '-');
+        let pId = this.product.id + '-' + (this.selectedSize ? String(this.selectedSize).replace(/\s+/g, '-') : '') + '-' + rName.replace(/\s+/g, '-');
         let productToAdd = { 
             id: pId, 
             name: this.product.name + (this.selectedSize ? ' (' + this.selectedSize + ')' : '') + ' [For: ' + rName + ']', 
