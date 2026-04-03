@@ -28,6 +28,8 @@
     product: null,
     selectedSize: '',
     loading: true,
+    recipientName: '',
+    recipientError: false,
     async initPage() {
         const savedCart = localStorage.getItem('cart');
         if (savedCart) {
@@ -61,10 +63,16 @@
     },
     addThisProduct() {
         if (!this.product) return;
-        let pId = this.product.id + '-' + this.selectedSize.replace(/\s+/g, '-');
+        if (this.recipientName.trim() === '') {
+            this.recipientError = true;
+            return;
+        }
+        this.recipientError = false;
+        let rName = this.recipientName.trim();
+        let pId = this.product.id + '-' + this.selectedSize.replace(/\s+/g, '-') + '-' + rName.replace(/\s+/g, '-');
         let productToAdd = { 
             id: pId, 
-            name: this.product.name + (this.selectedSize ? ' (' + this.selectedSize + ')' : ''), 
+            name: this.product.name + (this.selectedSize ? ' (' + this.selectedSize + ')' : '') + ' [For: ' + rName + ']', 
             price: Number(this.product.price), 
             image: this.product.image 
         };
@@ -160,6 +168,13 @@
                         <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </div>
                 </div>
+            </div>
+            <div class="mb-6 w-full lg:w-2/3">
+                <div class="flex justify-between items-center mb-4">
+                    <label class="block text-[10px] uppercase tracking-[0.3em] font-bold text-gray-900">Who is this for? *</label>
+                </div>
+                <input type="text" x-model="recipientName" @input="recipientError = false" placeholder="Recipient Name" :class="{'border-red-500': recipientError, 'border-gray-300': !recipientError}" class="w-full border rounded-none px-4 py-4 text-sm font-medium focus:outline-none focus:border-black appearance-none bg-white relative z-10 transition-colors">
+                <div x-show="recipientError" class="text-red-500 text-xs mt-2 uppercase tracking-widest font-bold">Please provide a recipient name</div>
             </div>
             
             <button @click="addThisProduct()" class="w-full lg:w-2/3 bg-black text-white py-5 text-[10px] uppercase tracking-[0.3em] font-bold hover:bg-gray-800 transition-colors mb-10 shadow-lg mt-2">Add to Bag</button>

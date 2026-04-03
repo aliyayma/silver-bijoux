@@ -165,6 +165,19 @@
         if (savedCart) {
             this.cartItems = JSON.parse(savedCart);
         }
+
+        const loadSettings = async () => {
+            const data = await window.FirebaseDB.getData('storeSettings');
+            if (data && data.length > 0) {
+                this.taxRate = data[0].taxRate !== undefined ? data[0].taxRate : 8;
+                this.shipping = data[0].deliveryPrice !== undefined ? data[0].deliveryPrice : 0;
+            }
+        };
+        if (window.FirebaseDB) {
+            loadSettings();
+        } else {
+            document.addEventListener('firebase-ready', loadSettings);
+        }
     },
     formData: { firstName: '', lastName: '', email: '', address: '', city: '', state: '', zip: '', phone: '', cardName: '', cardNumber: '', expiry: '', cvv: '' },
     notes: '',
@@ -175,22 +188,23 @@
     discount: 0,
     promoError: '',
     promoSuccess: '',
+    taxRate: 8,
+    shipping: 0,
     shippingErrors: { firstName: false, email: false, address: false, phone: false },
     paymentErrors: { cardName: false, cardNumber: false, expiry: false, cvv: false },
     get subtotal() {
         return this.cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     },
     get tax() {
-        return this.subtotal * 0.08;
+        return this.subtotal * (this.taxRate / 100);
     },
     get total() {
-        return this.subtotal + this.tax;
+        return this.subtotal + this.tax + this.shipping;
     },
     get depositAmount() {
         const finalTotal = this.total - this.discount;
         return finalTotal * 0.30;
     },
-    shipping: 0,
     validateShipping() {
         this.shippingErrors = { firstName: false, email: false, address: false, phone: false };
         let isValid = true;
@@ -533,7 +547,7 @@
                             </div>
                             <div class="flex justify-between text-sm">
                                 <span class="text-slate-600">Shipping</span>
-                                <span class="font-semibold text-emerald-600">FREE</span>
+                                <span class="font-semibold text-emerald-600" :class="{'text-emerald-600': shipping === 0, 'text-slate-900': shipping > 0}" x-text="shipping === 0 ? 'FREE' : '£' + shipping.toFixed(2)"></span>
                             </div>
                             <div class="flex justify-between text-sm">
                                 <span class="text-slate-600">Tax</span>
