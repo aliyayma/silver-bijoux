@@ -30,6 +30,8 @@
     loading: true,
     recipientName: '',
     recipientError: false,
+    customSize: '',
+    customSizeError: false,
     async initPage() {
         const savedCart = localStorage.getItem('cart');
         if (savedCart) {
@@ -63,22 +65,34 @@
     },
     addThisProduct() {
         if (!this.product) return;
-        let isHandmade = this.product.category === 'Handmade';
+        let isHandmade = this.product.category === 'Handmade' || this.product.tag === 'Handmade';
         
-        if (isHandmade && this.recipientName.trim() === '') {
+        let hasError = false;
+        
+        if (this.recipientName.trim() === '') {
             this.recipientError = true;
-            return;
+            hasError = true;
+        } else {
+            this.recipientError = false;
         }
-        this.recipientError = false;
+        
+        if (isHandmade && this.customSize.trim() === '') {
+            this.customSizeError = true;
+            hasError = true;
+        } else {
+            this.customSizeError = false;
+        }
+        
+        if (hasError) return;
         
         let rName = this.recipientName.trim();
-        let pId = String(this.product.id) + (this.selectedSize ? '-' + String(this.selectedSize).replace(/\s+/g, '-') : '');
-        let pName = this.product.name + (this.selectedSize ? ' (' + this.selectedSize + ')' : '');
+        let selectedOrCustomSize = isHandmade ? this.customSize.trim() : this.selectedSize;
         
-        if (isHandmade && rName) {
-            pId += '-' + rName.replace(/\s+/g, '-');
-            pName += ' [For: ' + rName + ']';
-        }
+        let pId = String(this.product.id) + (selectedOrCustomSize ? '-' + String(selectedOrCustomSize).replace(/\s+/g, '-') : '');
+        let pName = this.product.name + (selectedOrCustomSize ? ' (' + selectedOrCustomSize + ')' : '');
+        
+        pId += '-' + rName.replace(/\s+/g, '-');
+        pName += ' [For: ' + rName + ']';
         
         let productToAdd = { 
             id: pId, 
@@ -161,7 +175,7 @@
             
             <p class="text-gray-500 text-sm leading-relaxed mb-10 text-justify" x-text="product ? product.description : ''"></p>
             
-            <div class="mb-10 w-full lg:w-2/3" x-show="product && product.sizes && product.sizes.length > 0">
+            <div class="mb-10 w-full lg:w-2/3" x-show="product && product.sizes && product.sizes.length > 0 && !(product.category === 'Handmade' || product.tag === 'Handmade')">
                 <div class="flex justify-between items-center mb-4">
                     <label class="block text-[10px] uppercase tracking-[0.3em] font-bold text-gray-900">Select Size</label>
                     <a href="#" class="text-[10px] uppercase tracking-[0.2em] text-gray-400 underline">Size Guide</a>
@@ -179,9 +193,17 @@
                     </div>
                 </div>
             </div>
-            <div class="mb-6 w-full lg:w-2/3" x-show="product && product.category === 'Handmade'">
+            <div class="mb-6 w-full lg:w-2/3" x-show="product && (product.category === 'Handmade' || product.tag === 'Handmade')">
                 <div class="flex justify-between items-center mb-4">
-                    <label class="block text-[10px] uppercase tracking-[0.3em] font-bold text-gray-900">Who is this for? *</label>
+                    <label class="block text-[10px] uppercase tracking-[0.3em] font-bold text-gray-900">Custom Size *</label>
+                </div>
+                <input type="text" x-model="customSize" @input="customSizeError = false" placeholder="e.g. 5 cm, Size 9, etc." :class="{'border-red-500': customSizeError, 'border-gray-300': !customSizeError}" class="w-full border rounded-none px-4 py-4 text-sm font-medium focus:outline-none focus:border-black appearance-none bg-white relative z-10 transition-colors">
+                <div x-show="customSizeError" class="text-red-500 text-xs mt-2 uppercase tracking-widest font-bold">Please specify the required size</div>
+            </div>
+            
+            <div class="mb-6 w-full lg:w-2/3" x-show="product">
+                <div class="flex justify-between items-center mb-4">
+                    <label class="block text-[10px] uppercase tracking-[0.3em] font-bold text-gray-900">Who is this for? (Recipient Name) *</label>
                 </div>
                 <input type="text" x-model="recipientName" @input="recipientError = false" placeholder="Recipient Name" :class="{'border-red-500': recipientError, 'border-gray-300': !recipientError}" class="w-full border rounded-none px-4 py-4 text-sm font-medium focus:outline-none focus:border-black appearance-none bg-white relative z-10 transition-colors">
                 <div x-show="recipientError" class="text-red-500 text-xs mt-2 uppercase tracking-widest font-bold">Please provide a recipient name</div>
