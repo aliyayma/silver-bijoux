@@ -31,7 +31,7 @@
     mobileMenuOpen: false,
     cartItems: [],
     products: [],
-    activeCategory: 'All',
+    activeCategory: 'Rings',
     homepageMedia: {
         heroMediaUrl: 'https://cdn.coverr.co/videos/coverr-jewelry-on-display-5255/1080p.mp4',
         heroMediaType: 'video',
@@ -197,13 +197,11 @@
             
             <!-- Category Filters -->
             <div class="flex flex-wrap justify-center gap-6 mt-10">
-                <button @click="activeCategory = 'All'" :class="activeCategory === 'All' ? 'text-black border-black border-b' : 'text-gray-400 border-transparent hover:text-black'" class="text-[10px] uppercase tracking-[0.2em] font-bold pb-1 transition-colors">Collection</button>
                 <button @click="activeCategory = 'Rings'" :class="activeCategory === 'Rings' ? 'text-black border-black border-b' : 'text-gray-400 border-transparent hover:text-black'" class="text-[10px] uppercase tracking-[0.2em] font-bold pb-1 transition-colors">Rings</button>
                 <button @click="activeCategory = 'Necklaces'" :class="activeCategory === 'Necklaces' ? 'text-black border-black border-b' : 'text-gray-400 border-transparent hover:text-black'" class="text-[10px] uppercase tracking-[0.2em] font-bold pb-1 transition-colors">Necklaces</button>
                 <button @click="activeCategory = 'Bracelets'" :class="activeCategory === 'Bracelets' ? 'text-black border-black border-b' : 'text-gray-400 border-transparent hover:text-black'" class="text-[10px] uppercase tracking-[0.2em] font-bold pb-1 transition-colors">Bracelets</button>
                 <button @click="activeCategory = 'Earrings'" :class="activeCategory === 'Earrings' ? 'text-black border-black border-b' : 'text-gray-400 border-transparent hover:text-black'" class="text-[10px] uppercase tracking-[0.2em] font-bold pb-1 transition-colors">Earrings</button>
-                <button @click="activeCategory = 'Handmade'" :class="activeCategory === 'Handmade' ? 'text-black border-black border-b' : 'text-gray-400 border-transparent hover:text-black'" class="text-[10px] uppercase tracking-[0.2em] font-bold pb-1 transition-colors">Handmade</button>
-                <button @click="activeCategory = 'Trending'" :class="activeCategory === 'Trending' ? 'text-black border-black border-b' : 'text-gray-400 border-transparent hover:text-black'" class="text-[10px] uppercase tracking-[0.2em] font-bold pb-1 transition-colors">Trending</button>
+                <button @click="activeCategory = 'Anklets'" :class="activeCategory === 'Anklets' ? 'text-black border-black border-b' : 'text-gray-400 border-transparent hover:text-black'" class="text-[10px] uppercase tracking-[0.2em] font-bold pb-1 transition-colors">Anklets</button>
             </div>
         </div>
         
